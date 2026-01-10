@@ -41,18 +41,6 @@ export const Header: React.FC<HeaderProps> = ({ cwd, mode, verbose, showLogo = t
         <Text color="gray">📁 </Text>
         <Text>{cwd}</Text>
       </Box>
-      <Box>
-        <Text color="gray">Mode: </Text>
-        <Text color={mode === 'interactive' ? 'green' : 'yellow'}>
-          {mode === 'interactive' ? 'Interactive' : 'One-shot'}
-        </Text>
-        {verbose && (
-          <>
-            <Text color="gray"> | </Text>
-            <Text color="magenta">Verbose</Text>
-          </>
-        )}
-      </Box>
     </Box>
   );
 };

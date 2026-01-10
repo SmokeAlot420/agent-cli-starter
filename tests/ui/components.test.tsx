@@ -15,31 +15,34 @@ import { UltrathinkText } from '../../src/ui/components/UltrathinkText.js';
 import { ColorizedTextInput } from '../../src/ui/components/ColorizedTextInput.js';
 
 describe('Header Component', () => {
-  it('should render with cwd and mode', () => {
+  it('should render with branding and cwd', () => {
     const { lastFrame } = render(
       <Header cwd="/test/path" mode="interactive" verbose={false} />
     );
 
-    // Uses BRANDING.productName from src/branding.ts
+    // Uses BRANDING from src/branding.ts
     expect(lastFrame()).toContain('Fork Brand Ship');
+    expect(lastFrame()).toContain('Make It Yours');
     expect(lastFrame()).toContain('/test/path');
-    expect(lastFrame()).toContain('Interactive');
   });
 
-  it('should show verbose indicator when enabled', () => {
+  it('should render FBS logo', () => {
     const { lastFrame } = render(
-      <Header cwd="/test" mode="interactive" verbose={true} />
+      <Header cwd="/test" mode="interactive" verbose={false} />
     );
 
-    expect(lastFrame()).toContain('Verbose');
+    // FBS ASCII art characters
+    expect(lastFrame()).toContain('███████');
   });
 
-  it('should show oneshot mode correctly', () => {
+  it('should hide logo when showLogo is false', () => {
     const { lastFrame } = render(
-      <Header cwd="/test" mode="oneshot" verbose={false} />
+      <Header cwd="/test" mode="oneshot" verbose={false} showLogo={false} />
     );
 
-    expect(lastFrame()).toContain('One-shot');
+    // Should show branding text but not the ASCII art
+    expect(lastFrame()).toContain('Fork Brand Ship');
+    expect(lastFrame()).not.toContain('███████');
   });
 });
 
