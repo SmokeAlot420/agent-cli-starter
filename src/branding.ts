@@ -37,19 +37,19 @@ export interface BrandingConfig {
  * Default branding - customize this for your agent!
  */
 export const BRANDING: BrandingConfig = {
-  productName: 'My Agent',
+  productName: 'Fork Brand Ship',
 
-  tagline: 'Your AI Assistant',
+  tagline: 'Make It Yours',
 
-  subtitle: 'Claude Agent SDK | Full Claude Code Power',
+  subtitle: '',
 
   logo: `
- ██╗ ██╗    ██╗   ██╗
-████████╗   ╚██╗ ██╔╝
-╚██╔═██╔╝    ╚████╔╝
-████████╗     ╚██╔╝
-╚██╔═██╔╝      ██║
- ╚═╝ ╚═╝       ╚═╝`,
+  ███████╗██████╗ ███████╗
+  ██╔════╝██╔══██╗██╔════╝
+  █████╗  ██████╔╝███████╗
+  ██╔══╝  ██╔══██╗╚════██║
+  ██║     ██████╔╝███████║
+  ╚═╝     ╚═════╝ ╚══════╝`,
 
   logoColor: 'cyan',
 

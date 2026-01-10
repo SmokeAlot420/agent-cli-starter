@@ -18,9 +18,9 @@ describe('CLI', () => {
         encoding: 'utf-8'
       });
 
-      // Uses BRANDING.productName from src/branding.ts (default: "My Agent")
-      expect(output).toContain('My Agent');
-      expect(output).toContain('Your AI Assistant');
+      // Uses BRANDING from src/branding.ts
+      expect(output).toContain('Fork Brand Ship');
+      expect(output).toContain('Make It Yours');
     });
 
     it('should display help with -h', () => {

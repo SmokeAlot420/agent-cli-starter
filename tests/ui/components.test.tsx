@@ -20,8 +20,8 @@ describe('Header Component', () => {
       <Header cwd="/test/path" mode="interactive" verbose={false} />
     );
 
-    // Uses BRANDING.productName from src/branding.ts (default: "My Agent")
-    expect(lastFrame()).toContain('My Agent');
+    // Uses BRANDING.productName from src/branding.ts
+    expect(lastFrame()).toContain('Fork Brand Ship');
     expect(lastFrame()).toContain('/test/path');
     expect(lastFrame()).toContain('Interactive');
   });
