@@ -425,6 +425,15 @@ export class ConversationalAgent {
               };
               this.isRunning = false;
               return;
+            case 'openConfig':
+              // Action handled by UI layer - emit special message type
+              yield {
+                type: 'text',
+                content: builtinResult.message.content,
+                metadata: { action: 'openConfig' }
+              };
+              this.isRunning = false;
+              return;
           }
         }
 

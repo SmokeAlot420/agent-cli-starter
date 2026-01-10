@@ -21,7 +21,7 @@ export interface HeaderProps {
 /**
  * Header component with customizable branding and ASCII art
  */
-export const Header: React.FC<HeaderProps> = ({ cwd, mode, verbose, showLogo = true }) => {
+export const Header: React.FC<HeaderProps> = ({ cwd, mode: _mode, verbose: _verbose, showLogo = true }) => {
   return (
     <Box
       flexDirection="column"

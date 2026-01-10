@@ -33,3 +33,14 @@ export type {
   UseSessionPickerOptions,
   UseSessionPickerReturn
 } from './useSessionPicker.js';
+
+// useConfigPanel - Config panel state management
+export { useConfigPanel } from './useConfigPanel.js';
+export type {
+  UseConfigPanelOptions,
+  UseConfigPanelReturn,
+  ConfigTab,
+  ConfigStatus,
+  ConfigSettings,
+  ConfigUsage
+} from './useConfigPanel.js';

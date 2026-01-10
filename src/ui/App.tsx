@@ -14,6 +14,7 @@ import {
   InputPrompt,
   PermissionPrompt,
   SessionPicker,
+  ConfigPanel,
   type ThinkingState
 } from './components/index.js';
 import {
@@ -21,7 +22,8 @@ import {
   useThinking,
   useKeyboard,
   usePermission,
-  useSessionPicker
+  useSessionPicker,
+  useConfigPanel
 } from './hooks/index.js';
 import type { ConversationalAgentOptions, PermissionMode, ConversationMessage } from '../conversation.js';
 import type { SessionListItem } from '../types/index.js';
@@ -122,6 +124,8 @@ export const App: React.FC<AppProps> = ({
     onAction: (action: string, _data?: Record<string, unknown>) => {
       if (action === 'showSessionPicker') {
         showSessionPicker();
+      } else if (action === 'openConfig') {
+        configPanel.open();
       }
       // Future: handle other actions like 'openMcpPanel', etc.
     }
@@ -141,6 +145,17 @@ export const App: React.FC<AppProps> = ({
       // Close picker and let user type in input
       sessionPicker.close();
     }
+  });
+
+  // Config panel state
+  const configPanel = useConfigPanel({
+    cwd,
+    sessionId: _sessionId,
+    model: agentOptions?.model || 'opus',
+    thinkingEnabled: showThinking,
+    verbose,
+    permissionMode: permissionMode,
+    contextPercent: contextUsage
   });
 
   // Show session picker (Ctrl+R or /resume command action)
@@ -199,6 +214,9 @@ export const App: React.FC<AppProps> = ({
     },
     { isActive: sessionPicker.isOpen }
   );
+
+  // Config panel keyboard navigation
+  // This is handled by the ConfigPanel component itself via useInput
 
   // Sync thinking state with processing
   useEffect(() => {
@@ -270,8 +288,22 @@ export const App: React.FC<AppProps> = ({
         />
       )}
 
-      {/* Input prompt (only in interactive mode, hidden during permission/session prompts) */}
-      {mode === 'interactive' && !pendingRequest && !sessionPicker.isOpen && (
+      {/* Config panel when open (/config) */}
+      {configPanel.isOpen && (
+        <ConfigPanel
+          activeTab={configPanel.activeTab}
+          status={configPanel.status}
+          settings={configPanel.settings}
+          usage={configPanel.usage}
+          onClose={configPanel.close}
+          onNextTab={configPanel.nextTab}
+          onPrevTab={configPanel.prevTab}
+          onSetTab={configPanel.setTab}
+        />
+      )}
+
+      {/* Input prompt (only in interactive mode, hidden during permission/session/config prompts) */}
+      {mode === 'interactive' && !pendingRequest && !sessionPicker.isOpen && !configPanel.isOpen && (
         <InputPrompt
           onSubmit={sendMessage}
           disabled={isProcessing}

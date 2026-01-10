@@ -50,3 +50,7 @@ export type { ColorizedTextInputProps } from './ColorizedTextInput.js';
 // SessionPicker - Session selection dropdown
 export { SessionPicker } from './SessionPicker.js';
 export type { SessionPickerProps } from './SessionPicker.js';
+
+// ConfigPanel - Claude Code-style tabbed config panel
+export { ConfigPanel } from './ConfigPanel.js';
+export type { ConfigPanelProps } from './ConfigPanel.js';

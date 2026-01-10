@@ -13,7 +13,7 @@ import type { ContextManager } from '../features/context.js';
 import type { SessionService } from '../services/sessions.js';
 import { formatSkillList, discoverAllSkills } from '../features/skills.js';
 import { formatSubagentList, discoverAllSubagents } from '../features/subagents.js';
-import { formatSettings, loadSettings } from '../features/settings.js';
+import { loadSettings } from '../features/settings.js';
 import { formatHooksList } from '../features/hooks.js';
 import { formatPluginList, type LoadedPlugin } from '../features/plugins.js';
 
@@ -156,7 +156,7 @@ export function handleBuiltinCommand(
     case 'config':
     case 'settings':
       return {
-        message: { type: 'text', content: formatSettings(loadSettings(context.cwd)) },
+        message: { type: 'text', content: '' },  // Panel handles display
         action: { type: 'openConfig' }
       };
 

@@ -1,0 +1,137 @@
+/**
+ * Config Panel Hook
+ * Manages state for the /config tabbed UI panel
+ */
+
+import { useState, useCallback } from 'react';
+import { BRANDING } from '../../branding.js';
+import { DEFAULT_MODEL, ULTRATHINK_TOKENS } from '../../constants.js';
+
+export type ConfigTab = 'status' | 'config' | 'usage';
+
+export interface ConfigStatus {
+  version: string;
+  productName: string;
+  sessionId?: string;
+  cwd: string;
+  model: string;
+  modelId: string;
+  thinkingTokens: number;
+}
+
+export interface ConfigSettings {
+  thinkingMode: boolean;
+  verboseOutput: boolean;
+  permissionMode: string;
+}
+
+export interface ConfigUsage {
+  contextPercent: number;
+}
+
+export interface UseConfigPanelOptions {
+  cwd?: string;
+  sessionId?: string;
+  model?: string;
+  thinkingEnabled?: boolean;
+  verbose?: boolean;
+  permissionMode?: string;
+  contextPercent?: number;
+}
+
+export interface UseConfigPanelReturn {
+  isOpen: boolean;
+  activeTab: ConfigTab;
+  status: ConfigStatus;
+  settings: ConfigSettings;
+  usage: ConfigUsage;
+  open: () => void;
+  close: () => void;
+  setTab: (tab: ConfigTab) => void;
+  nextTab: () => void;
+  prevTab: () => void;
+}
+
+const TABS: ConfigTab[] = ['status', 'config', 'usage'];
+
+export function useConfigPanel(
+  options: UseConfigPanelOptions = {}
+): UseConfigPanelReturn {
+  const {
+    cwd = process.cwd(),
+    sessionId,
+    model = 'opus',
+    thinkingEnabled = false,
+    verbose = false,
+    permissionMode = 'default',
+    contextPercent = 0
+  } = options;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ConfigTab>('status');
+
+  // Build status info
+  const status: ConfigStatus = {
+    version: '1.0.0',
+    productName: BRANDING.productName,
+    sessionId,
+    cwd,
+    model,
+    modelId: DEFAULT_MODEL,
+    thinkingTokens: ULTRATHINK_TOKENS
+  };
+
+  // Build settings info
+  const settings: ConfigSettings = {
+    thinkingMode: thinkingEnabled,
+    verboseOutput: verbose,
+    permissionMode
+  };
+
+  // Build usage info
+  const usage: ConfigUsage = {
+    contextPercent
+  };
+
+  const open = useCallback(() => {
+    setIsOpen(true);
+    setActiveTab('status');
+  }, []);
+
+  const close = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const setTab = useCallback((tab: ConfigTab) => {
+    setActiveTab(tab);
+  }, []);
+
+  const nextTab = useCallback(() => {
+    setActiveTab(current => {
+      const idx = TABS.indexOf(current);
+      return TABS[(idx + 1) % TABS.length];
+    });
+  }, []);
+
+  const prevTab = useCallback(() => {
+    setActiveTab(current => {
+      const idx = TABS.indexOf(current);
+      return TABS[(idx - 1 + TABS.length) % TABS.length];
+    });
+  }, []);
+
+  return {
+    isOpen,
+    activeTab,
+    status,
+    settings,
+    usage,
+    open,
+    close,
+    setTab,
+    nextTab,
+    prevTab
+  };
+}
+
+export default useConfigPanel;
