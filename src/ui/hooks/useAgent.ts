@@ -233,7 +233,7 @@ export function useAgent(options: UseAgentOptions = {}): UseAgentReturn {
   const interrupt = useCallback(() => {
     if (agentRef.current) {
       agentRef.current.interrupt().catch(() => {
-        // Ignore interrupt errors
+        // Interrupt errors are expected when there's nothing to interrupt
       });
     }
   }, []);

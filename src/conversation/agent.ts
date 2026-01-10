@@ -63,6 +63,7 @@ export class ConversationalAgent {
   private conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [];
   private isRunning: boolean = false;
   private currentQuery: Query | null = null;
+  private abortRequested: boolean = false;  // Fallback interrupt mechanism
   private mcpManager: McpManager;
   private discoveredCommands: SlashCommand[] = [];
 
@@ -360,6 +361,7 @@ export class ConversationalAgent {
     }
 
     this.isRunning = true;
+    this.abortRequested = false;  // Reset abort flag at start
 
     // Check for ultrathink prefix
     let processedMessage = message;
@@ -539,6 +541,12 @@ export class ConversationalAgent {
 
       // Stream all messages from the agent loop
       for await (const msg of this.currentQuery) {
+        // Check abort flag (fallback if SDK interrupt doesn't work)
+        if (this.abortRequested) {
+          yield { type: 'text', content: '\n\n[Interrupted by user]' };
+          break;
+        }
+
         // Capture session_id from ANY SDK message (all message types have session_id)
         // This is more robust than only checking system.init
         if ('session_id' in msg && msg.session_id && !this.sessionId) {
@@ -636,8 +644,15 @@ export class ConversationalAgent {
    * Interrupt current query if running
    */
   async interrupt(): Promise<void> {
+    // Set abort flag as fallback mechanism (SDK interrupt may not always work)
+    this.abortRequested = true;
+
     if (this.currentQuery) {
-      await this.currentQuery.interrupt();
+      try {
+        await this.currentQuery.interrupt();
+      } catch {
+        // SDK interrupt may throw - abort flag handles this case
+      }
     }
   }
 

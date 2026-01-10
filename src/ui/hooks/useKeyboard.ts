@@ -3,6 +3,7 @@
  * Handle global keyboard shortcuts
  */
 
+import { useRef, useEffect } from 'react';
 import { useInput, useApp } from 'ink';
 
 export interface UseKeyboardOptions {
@@ -10,7 +11,7 @@ export interface UseKeyboardOptions {
   onExit?: () => void;
   /** Callback when user requests clear (Ctrl+L) */
   onClear?: () => void;
-  /** Callback when user requests interrupt (Ctrl+D) */
+  /** Callback when user requests interrupt (Ctrl+D or Escape when processing) */
   onInterrupt?: () => void;
   /** Callback when user cycles permission mode (Shift+Tab) */
   onCycleMode?: () => void;
@@ -20,14 +21,32 @@ export interface UseKeyboardOptions {
   onShowSessions?: () => void;
   /** Whether to enable keyboard handling */
   enabled?: boolean;
+  /** Whether agent is currently processing (enables Escape to interrupt) */
+  isProcessing?: boolean;
 }
 
 /**
  * Hook to handle global keyboard shortcuts
  */
 export function useKeyboard(options: UseKeyboardOptions = {}): void {
-  const { onExit, onClear, onInterrupt, onCycleMode, onToggleThinking, onShowSessions, enabled = true } = options;
+  const {
+    onExit,
+    onClear,
+    onInterrupt,
+    onCycleMode,
+    onToggleThinking,
+    onShowSessions,
+    enabled = true,
+    isProcessing = false
+  } = options;
   const { exit } = useApp();
+
+  // Use ref to avoid stale closure - isProcessing may change between renders
+  // but the useInput callback captures the initial value in its closure
+  const isProcessingRef = useRef(isProcessing);
+  useEffect(() => {
+    isProcessingRef.current = isProcessing;
+  }, [isProcessing]);
 
   useInput(
     (input, key) => {
@@ -48,8 +67,17 @@ export function useKeyboard(options: UseKeyboardOptions = {}): void {
         return;
       }
 
-      // Ctrl+D - Interrupt
+      // Ctrl+D - Interrupt (always, no isProcessing check)
       if (key.ctrl && input === 'd') {
+        if (onInterrupt) {
+          onInterrupt();
+        }
+        return;
+      }
+
+      // Escape - Interrupt (always call, interrupt() handles "nothing to interrupt")
+      // Panels have their own useInput with isActive, so they take priority
+      if (key.escape) {
         if (onInterrupt) {
           onInterrupt();
         }

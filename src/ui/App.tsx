@@ -183,14 +183,16 @@ export const App: React.FC<AppProps> = ({
     setTool
   } = useThinking();
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (Escape to interrupt only when no panels are open)
+  const panelsOpen = sessionPicker.isOpen || configPanel.isOpen;
   useKeyboard({
     onClear: clearHistory,
     onInterrupt: interrupt,
     onCycleMode: cyclePermissionMode,
     onToggleThinking: toggleShowThinking,
     onShowSessions: showSessionPicker,
-    enabled: true
+    enabled: true,
+    isProcessing: isProcessing && !panelsOpen  // Escape interrupts only when processing and no panels open
   });
 
   // Session picker keyboard navigation
@@ -317,6 +319,7 @@ export const App: React.FC<AppProps> = ({
         thinkingState={thinkingState}
         permissionMode={permissionMode}
         showThinking={showThinking}
+        isProcessing={isProcessing}
       />
     </Box>
   );

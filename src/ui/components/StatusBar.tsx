@@ -17,6 +17,8 @@ export interface StatusBarProps {
   permissionMode: 'default' | 'acceptEdits' | 'bypassPermissions' | 'plan' | string;
   /** Whether verbose thinking display is on */
   showThinking?: boolean;
+  /** Whether agent is currently processing */
+  isProcessing?: boolean;
 }
 
 /**
@@ -81,7 +83,8 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   contextUsage,
   thinkingState,
   permissionMode,
-  showThinking = false
+  showThinking = false,
+  isProcessing = false
 }) => {
   const stateDisplay = getStateDisplay(thinkingState);
   const contextColor = getContextColor(contextUsage);
@@ -109,7 +112,11 @@ export const StatusBar: React.FC<StatusBarProps> = ({
       {/* Right side: Mode and shortcuts */}
       <Box>
         <Text color={modeDisplay.color}>{modeDisplay.text}</Text>
-        <Text dimColor> | Shift+Tab mode | Ctrl+C exit</Text>
+        {isProcessing ? (
+          <Text color="yellow"> | Esc to cancel</Text>
+        ) : (
+          <Text dimColor> | Shift+Tab mode | Ctrl+C exit</Text>
+        )}
       </Box>
     </Box>
   );

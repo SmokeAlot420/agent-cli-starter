@@ -39,27 +39,41 @@ export function processSDKMessage(msg: SDKMessage, verbose: boolean): Conversati
             });
           }
         } else if (isToolUseBlock(block)) {
-          // Tool use block
-          if (verbose) {
-            chunks.push({
-              type: 'tool_use',
-              content: `[Using tool: ${block.name}]`,
-              metadata: { tool: block.name, input: block.input }
-            });
-          }
+          // Tool use block - always show (not just verbose)
+          // Extract meaningful info from input for display
+          const input = block.input as Record<string, unknown>;
+          let summary = '';
+
+          // Try to extract file path or command for display
+          if (input.file_path) summary = String(input.file_path);
+          else if (input.path) summary = String(input.path);
+          else if (input.command) summary = String(input.command).slice(0, 50);
+          else if (input.pattern) summary = `pattern: "${input.pattern}"`;
+          else if (input.query) summary = `query: "${String(input.query).slice(0, 30)}"`;
+          else if (input.url) summary = String(input.url);
+
+          chunks.push({
+            type: 'tool_use',
+            content: summary || block.name,
+            metadata: { tool: block.name, input: block.input, summary }
+          });
         }
       }
       break;
     }
 
     case 'tool_progress': {
+      // Tool progress - always show elapsed time
       const progressMsg = msg as SDKToolProgressMessage;
-      if (verbose) {
-        chunks.push({
-          type: 'tool_use',
-          content: `[Tool ${progressMsg.tool_name}: ${progressMsg.elapsed_time_seconds}s]`
-        });
-      }
+      chunks.push({
+        type: 'tool_use',
+        content: `${progressMsg.tool_name}`,
+        metadata: {
+          tool: progressMsg.tool_name,
+          elapsed: progressMsg.elapsed_time_seconds,
+          isProgress: true
+        }
+      });
       break;
     }
 
