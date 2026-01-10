@@ -1,32 +1,63 @@
-# Claude CLI Template
+# Claude CLI Template - Global Development Rules
 
-## Overview
+This is a modular approach to global rules, where each section is maintained in a separate file for easier organization and maintenance.
 
-This is a template for building your own Claude Code CLI. Customize `src/branding.ts` to make it yours.
+## Project Overview
 
-## Quick Start
+Open-source template for building your own Claude Code CLI. **Fork it, brand it, ship it.**
 
-1. Edit `src/branding.ts` with your branding
-2. Run `npm start` to test
-3. Customize commands in `.claude/commands/`
+Built on the `@anthropic-ai/claude-agent-sdk`, this template provides:
+- Full Claude Code capabilities (tools, MCP, streaming)
+- Ink-based terminal UI
+- Session management and persistence
+- Customizable branding and commands
 
-## Code Style
+---
 
-- TypeScript strict mode
-- ESM imports with `.js` extension
-- React hooks pattern for UI
+## 1. Core Principles
+@.claude/sections/01_core_principles.md
 
-## Commands
+---
 
-```bash
-npm run build      # Compile TypeScript
-npm run typecheck  # Type check
-npm test           # Run tests
-npm start          # Dev mode
-```
+## 2. Tech Stack
+@.claude/sections/02_tech_stack.md
 
-## Customization Points
+---
 
-- `src/branding.ts` - All branding configuration
-- `.claude/commands/` - Add custom slash commands
-- `src/ui/components/` - Modify UI components
+## 3. Architecture
+@.claude/sections/03_architecture.md
+
+---
+
+## 4. Code Style
+@.claude/sections/04_code_style.md
+
+---
+
+## 5. Logging
+@.claude/sections/05_logging.md
+
+---
+
+## 6. Testing
+@.claude/sections/06_testing.md
+
+---
+
+## 7. Customization
+@.claude/sections/07_customization.md
+
+---
+
+## 8. Development Commands
+@.claude/sections/08_dev_commands.md
+
+---
+
+## 9. Common Patterns
+@.claude/sections/09_common_patterns.md
+
+---
+
+## 10. AI Coding Assistant Instructions
+@.claude/sections/10_ai_instructions.md
