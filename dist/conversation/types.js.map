@@ -1,0 +1,1 @@
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../../src/conversation/types.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AAcH,wDAAwD;AACxD,MAAM,CAAC,MAAM,qBAAqB,GAAqB,CAAC,SAAS,EAAE,aAAa,EAAE,MAAM,CAAC,CAAC;AAE1F,qCAAqC;AACrC,MAAM,CAAC,MAAM,sBAAsB,GAAmC;IACpE,SAAS,EAAE,EAAE;IACb,aAAa,EAAE,iBAAiB;IAChC,mBAAmB,EAAE,oBAAoB;IACzC,MAAM,EAAE,cAAc;CACvB,CAAC"}

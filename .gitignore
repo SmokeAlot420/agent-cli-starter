@@ -2,8 +2,7 @@
 node_modules/
 .pnpm-store/
 
-# Build output
-dist/
+# Build output (dist is included for npm git dependencies)
 build/
 *.js
 *.d.ts
@@ -12,6 +11,9 @@ build/
 !bin/*.js
 !eslint.config.js
 !vitest.config.ts
+!dist/**/*.js
+!dist/**/*.d.ts
+!dist/**/*.js.map
 
 # Environment
 .env
