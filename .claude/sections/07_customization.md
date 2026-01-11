@@ -2,29 +2,57 @@
 
 This section covers the main customization points for making this template your own.
 
-## Branding (`src/branding.ts`)
+## Branding
 
-The primary customization file. Edit this to change:
+### Option 1: Direct Edit (Fork Template)
+
+If you fork the template, edit `src/branding.ts`:
 
 ```typescript
-export const BRANDING = {
-  name: 'Your CLI Name',
+export const BRANDING: BrandingConfig = {
+  productName: 'Your CLI Name',
   tagline: 'Your tagline here',
-  version: '1.0.0',
-
-  // ASCII art logo (optional)
-  logo: `
-    Your ASCII Art Here
-  `,
-
-  // Colors (Ink/Chalk color names)
-  colors: {
-    primary: 'cyan',
-    secondary: 'gray',
-    accent: 'magenta'
-  }
+  logo: `Your ASCII Art`,
+  systemPromptAppend: 'Custom instructions...'
 };
 ```
+
+### Option 2: BrandingContext (Use as Dependency)
+
+If using the template as a dependency, pass branding via props:
+
+```typescript
+// your-project/src/branding.ts
+import type { BrandingConfig } from 'claude-cli-template';
+
+export const MY_BRANDING: BrandingConfig = {
+  productName: 'My CLI',
+  tagline: 'My tagline',
+  logo: `My ASCII Logo`,
+  systemPromptAppend: 'My custom instructions'
+};
+
+// your-project/src/cli.ts
+import { App } from 'claude-cli-template';
+import { MY_BRANDING } from './branding.js';
+
+render(React.createElement(App, {
+  branding: MY_BRANDING,
+  // ...other props
+}));
+```
+
+The `BrandingConfig` interface:
+```typescript
+interface BrandingConfig {
+  productName: string;
+  tagline: string;
+  logo?: string;
+  systemPromptAppend?: string;
+}
+```
+
+Components use `useBranding()` hook to access branding.
 
 ## Slash Commands (`.claude/commands/`)
 
@@ -79,10 +107,14 @@ Available modes (cycle with Shift+Tab):
 
 ## System Prompt
 
-Append to the system prompt in `src/conversation/constants.ts`:
+Add custom system prompt instructions via branding:
 
 ```typescript
-export const SYSTEM_PROMPT_APPEND = `
+const BRANDING: BrandingConfig = {
+  // ...
+  systemPromptAppend: `
 Your custom instructions here.
-`;
+These are appended to the base system prompt.
+`
+};
 ```
