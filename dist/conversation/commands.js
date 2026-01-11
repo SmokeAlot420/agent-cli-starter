@@ -4,8 +4,7 @@
  * Handles built-in slash commands like /clear, /help, /mcp, etc.
  * Designed for full Claude Code CLI feature parity.
  */
-import { formatCommandList } from '../features/commands.js';
-import { formatModelList, resolveModel, getModelDisplayName } from '../features/models.js';
+import { resolveModel, getModelDisplayName } from '../features/models.js';
 import { formatSkillList, discoverAllSkills } from '../features/skills.js';
 import { formatSubagentList, discoverAllSubagents } from '../features/subagents.js';
 import { loadSettings } from '../features/settings.js';
@@ -45,11 +44,12 @@ export function handleBuiltinCommand(command, args, context) {
                 message: { type: 'text', content: 'Conversation cleared. Ready for new instructions.' },
                 action: { type: 'clearHistory' }
             };
-        // /help - Show commands
+        // /help - Open interactive help panel
         case 'help':
         case '?':
             return {
-                message: { type: 'text', content: formatCommandList(context.commands) }
+                message: { type: 'text', content: '' },
+                action: { type: 'openHelp' }
             };
         // /sessions - List all sessions
         case 'sessions':
@@ -205,21 +205,12 @@ export function handleBuiltinCommand(command, args, context) {
 /**
  * Handle /mcp command
  */
-function handleMcpCommand(args, mcpServers) {
+function handleMcpCommand(args, _mcpServers) {
     if (args === '' || args === 'status') {
-        const serverList = Object.entries(mcpServers);
-        if (serverList.length === 0) {
-            return {
-                message: { type: 'text', content: 'No MCP servers configured.' }
-            };
-        }
-        const lines = ['MCP Servers:', ''];
-        for (const [name, config] of serverList) {
-            const type = config.type || 'stdio';
-            lines.push(`  ${name} (${type})`);
-        }
+        // Open interactive MCP panel
         return {
-            message: { type: 'text', content: lines.join('\n') }
+            message: { type: 'text', content: '' },
+            action: { type: 'openMcp' }
         };
     }
     return {
@@ -229,7 +220,7 @@ function handleMcpCommand(args, mcpServers) {
 /**
  * Handle /model command
  */
-function handleModelCommand(args, currentModel) {
+function handleModelCommand(args, _currentModel) {
     if (args) {
         const newModel = resolveModel(args);
         return {
@@ -240,8 +231,10 @@ function handleModelCommand(args, currentModel) {
             action: { type: 'setModel', model: newModel }
         };
     }
+    // Open interactive model selector
     return {
-        message: { type: 'text', content: formatModelList(currentModel) }
+        message: { type: 'text', content: '' },
+        action: { type: 'openModelSelector' }
     };
 }
 /**

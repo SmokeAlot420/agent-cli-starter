@@ -44,3 +44,33 @@ export type {
   ConfigSettings,
   ConfigUsage
 } from './useConfigPanel.js';
+
+// useMcpPanel - MCP panel state management
+export { useMcpPanel } from './useMcpPanel.js';
+export type {
+  UseMcpPanelOptions,
+  UseMcpPanelReturn
+} from './useMcpPanel.js';
+
+// useModelSelector - Model selector state management
+export { useModelSelector } from './useModelSelector.js';
+export type {
+  UseModelSelectorOptions,
+  UseModelSelectorReturn
+} from './useModelSelector.js';
+
+// useMemoryEditor - Memory editor state management
+export { useMemoryEditor } from './useMemoryEditor.js';
+export type {
+  UseMemoryEditorOptions,
+  UseMemoryEditorReturn,
+  MemoryFile
+} from './useMemoryEditor.js';
+
+// useHelpPanel - Help panel state management
+export { useHelpPanel } from './useHelpPanel.js';
+export type {
+  UseHelpPanelOptions,
+  UseHelpPanelReturn,
+  HelpTab
+} from './useHelpPanel.js';

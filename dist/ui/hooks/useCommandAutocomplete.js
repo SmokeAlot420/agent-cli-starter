@@ -35,6 +35,8 @@ export function useCommandAutocomplete(options = {}) {
     const [isOpen, setIsOpen] = useState(false);
     const [filter, setFilter] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const maxVisible = options.maxVisible ?? 8;
     // Get all commands (cached by discoverAllCommands with 30s TTL)
     const allCommands = useMemo(() => {
         return options.commands ?? discoverAllCommands();
@@ -54,6 +56,7 @@ export function useCommandAutocomplete(options = {}) {
         setIsOpen(true);
         setFilter(initialFilter);
         setSelectedIndex(0);
+        setScrollOffset(0);
     }, []);
     /**
      * Close autocomplete dropdown
@@ -62,6 +65,7 @@ export function useCommandAutocomplete(options = {}) {
         setIsOpen(false);
         setFilter('');
         setSelectedIndex(0);
+        setScrollOffset(0);
     }, []);
     /**
      * Update filter text (resets selection)
@@ -69,21 +73,40 @@ export function useCommandAutocomplete(options = {}) {
     const updateFilter = useCallback((newFilter) => {
         setFilter(newFilter);
         setSelectedIndex(0);
+        setScrollOffset(0);
     }, []);
     /**
-     * Move selection to next item (clamp to bounds)
+     * Move selection to next item (clamp to bounds, scroll viewport if needed)
      */
     const selectNext = useCallback(() => {
         setSelectedIndex(prev => {
             const maxIndex = filteredCommands.length - 1;
-            return Math.min(prev + 1, maxIndex);
+            const newIndex = Math.min(prev + 1, maxIndex);
+            // Scroll down if selection moves below viewport
+            setScrollOffset(currentOffset => {
+                if (newIndex >= currentOffset + maxVisible) {
+                    return newIndex - maxVisible + 1;
+                }
+                return currentOffset;
+            });
+            return newIndex;
         });
-    }, [filteredCommands.length]);
+    }, [filteredCommands.length, maxVisible]);
     /**
-     * Move selection to previous item (clamp to bounds)
+     * Move selection to previous item (clamp to bounds, scroll viewport if needed)
      */
     const selectPrev = useCallback(() => {
-        setSelectedIndex(prev => Math.max(prev - 1, 0));
+        setSelectedIndex(prev => {
+            const newIndex = Math.max(prev - 1, 0);
+            // Scroll up if selection moves above viewport
+            setScrollOffset(currentOffset => {
+                if (newIndex < currentOffset) {
+                    return newIndex;
+                }
+                return currentOffset;
+            });
+            return newIndex;
+        });
     }, []);
     /**
      * Get currently selected command
@@ -98,6 +121,7 @@ export function useCommandAutocomplete(options = {}) {
         isOpen,
         filter,
         selectedIndex,
+        scrollOffset,
         filteredCommands,
         open,
         close,

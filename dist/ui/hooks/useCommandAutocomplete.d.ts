@@ -9,6 +9,8 @@ import { type SlashCommand } from '../../features/commands.js';
 export interface UseCommandAutocompleteOptions {
     /** Optional pre-loaded commands (defaults to discoverAllCommands()) */
     commands?: SlashCommand[];
+    /** Maximum visible items in dropdown (default: 8) */
+    maxVisible?: number;
 }
 /**
  * Return type for useCommandAutocomplete hook
@@ -20,6 +22,8 @@ export interface UseCommandAutocompleteReturn {
     filter: string;
     /** Currently selected index in filtered list */
     selectedIndex: number;
+    /** Scroll offset for viewport (first visible item index) */
+    scrollOffset: number;
     /** Commands matching current filter */
     filteredCommands: SlashCommand[];
     /** Open autocomplete with optional initial filter */

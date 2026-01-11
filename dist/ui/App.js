@@ -5,8 +5,8 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Box, useInput } from 'ink';
-import { Header, StatusBar, ThinkingIndicator, MessageStream, InputPrompt, PermissionPrompt, SessionPicker, ConfigPanel } from './components/index.js';
-import { useAgent, useThinking, useKeyboard, usePermission, useSessionPicker, useConfigPanel } from './hooks/index.js';
+import { Header, StatusBar, ThinkingIndicator, MessageStream, InputPrompt, PermissionPrompt, SessionPicker, ConfigPanel, McpPanel, ModelSelector, MemoryEditor, HelpPanel } from './components/index.js';
+import { useAgent, useThinking, useKeyboard, usePermission, useSessionPicker, useConfigPanel, useMcpPanel, useModelSelector, useMemoryEditor, useHelpPanel } from './hooks/index.js';
 import { BrandingProvider } from './context/BrandingContext.js';
 /**
  * Main App component
@@ -34,14 +34,27 @@ export const App = ({ cwd, mode, branding, verbose, agentOptions = {}, initialPr
         onMessage, // Save messages as they stream
         onLoadMessages, // Load messages for session picker resume
         // Handle command actions (e.g., showSessionPicker from /resume)
-        onAction: (action, _data) => {
+        onAction: (action, data) => {
             if (action === 'showSessionPicker') {
                 showSessionPicker();
             }
             else if (action === 'openConfig') {
                 configPanel.open();
             }
-            // Future: handle other actions like 'openMcpPanel', etc.
+            else if (action === 'openMcp') {
+                // Open MCP panel with current servers
+                const servers = data?.servers || {};
+                mcpPanel.open(servers);
+            }
+            else if (action === 'openModelSelector') {
+                modelSelector.open();
+            }
+            else if (action === 'openMemory') {
+                memoryEditor.open();
+            }
+            else if (action === 'openHelp') {
+                helpPanel.open();
+            }
         }
     });
     // Session picker state (after useAgent so we can use resumeSession)
@@ -59,6 +72,12 @@ export const App = ({ cwd, mode, branding, verbose, agentOptions = {}, initialPr
             sessionPicker.close();
         }
     });
+    // Wrap cyclePermissionMode to update our local state too
+    const cyclePermissionMode = () => {
+        const newMode = agentCyclePermissionMode();
+        setCurrentPermissionMode(newMode);
+        return newMode;
+    };
     // Config panel state
     const configPanel = useConfigPanel({
         cwd,
@@ -67,8 +86,30 @@ export const App = ({ cwd, mode, branding, verbose, agentOptions = {}, initialPr
         thinkingEnabled: showThinking,
         verbose,
         permissionMode: permissionMode,
-        contextPercent: contextUsage
+        contextPercent: contextUsage,
+        // Editable setting callbacks
+        onChangeModel: () => {
+            configPanel.close();
+            modelSelector.open();
+        },
+        onToggleThinking: toggleShowThinking,
+        onCyclePermission: cyclePermissionMode
+        // Note: verbose toggle would need to be added to useAgent if needed
     });
+    // MCP panel state
+    const mcpPanel = useMcpPanel();
+    // Model selector state
+    const modelSelector = useModelSelector({
+        currentModel: agentOptions?.model || 'opus',
+        onSelect: (model) => {
+            // Send /model command to change the model
+            sendMessage(`/model ${model}`);
+        }
+    });
+    // Memory editor state
+    const memoryEditor = useMemoryEditor({ cwd });
+    // Help panel state
+    const helpPanel = useHelpPanel();
     // Show session picker (Ctrl+R or /resume command action)
     const showSessionPicker = () => {
         if (onShowSessions) {
@@ -76,16 +117,10 @@ export const App = ({ cwd, mode, branding, verbose, agentOptions = {}, initialPr
             sessionPicker.open(sessions);
         }
     };
-    // Wrap cyclePermissionMode to update our local state too
-    const cyclePermissionMode = () => {
-        const newMode = agentCyclePermissionMode();
-        setCurrentPermissionMode(newMode);
-        return newMode;
-    };
     // Thinking state
     const { isThinking, currentTool, elapsed, startThinking, stopThinking, setTool } = useThinking();
     // Keyboard shortcuts (Escape to interrupt only when no panels are open)
-    const panelsOpen = sessionPicker.isOpen || configPanel.isOpen;
+    const panelsOpen = sessionPicker.isOpen || configPanel.isOpen || mcpPanel.isOpen || modelSelector.isOpen || memoryEditor.isOpen || helpPanel.isOpen;
     useKeyboard({
         onClear: clearHistory,
         onInterrupt: interrupt,
@@ -149,7 +184,12 @@ export const App = ({ cwd, mode, branding, verbose, agentOptions = {}, initialPr
     const thinkingState = isProcessing
         ? (currentTool ? 'tool_use' : 'thinking')
         : 'idle';
-    return (_jsx(BrandingProvider, { branding: branding, children: _jsxs(Box, { flexDirection: "column", minHeight: 20, children: [_jsx(Header, { cwd: cwd, mode: mode, verbose: verbose }), _jsx(Box, { flexDirection: "column", flexGrow: 1, minHeight: 10, children: _jsx(MessageStream, { messages: messages, streaming: isProcessing, verbose: verbose }) }), _jsx(ThinkingIndicator, { active: isThinking, tool: currentTool ?? undefined, elapsed: elapsed }), pendingRequest && (_jsx(PermissionPrompt, { request: pendingRequest, onRespond: respond })), sessionPicker.isOpen && (_jsx(SessionPicker, { sessions: sessionPicker.filteredSessions, selectedIndex: sessionPicker.selectedIndex, filter: sessionPicker.filter })), configPanel.isOpen && (_jsx(ConfigPanel, { activeTab: configPanel.activeTab, status: configPanel.status, settings: configPanel.settings, usage: configPanel.usage, onClose: configPanel.close, onNextTab: configPanel.nextTab, onPrevTab: configPanel.prevTab, onSetTab: configPanel.setTab })), mode === 'interactive' && !pendingRequest && !sessionPicker.isOpen && !configPanel.isOpen && (_jsx(InputPrompt, { onSubmit: sendMessage, disabled: isProcessing, placeholder: "Ask me anything..." })), _jsx(StatusBar, { contextUsage: contextUsage, thinkingState: thinkingState, permissionMode: permissionMode, showThinking: showThinking, isProcessing: isProcessing })] }) }));
+    return (_jsx(BrandingProvider, { branding: branding, children: _jsxs(Box, { flexDirection: "column", minHeight: 20, children: [_jsx(Header, { cwd: cwd, mode: mode, verbose: verbose }), _jsx(Box, { flexDirection: "column", flexGrow: 1, minHeight: 10, children: _jsx(MessageStream, { messages: messages, streaming: isProcessing, verbose: verbose }) }), _jsx(ThinkingIndicator, { active: isThinking, tool: currentTool ?? undefined, elapsed: elapsed }), pendingRequest && (_jsx(PermissionPrompt, { request: pendingRequest, onRespond: respond })), sessionPicker.isOpen && (_jsx(SessionPicker, { sessions: sessionPicker.filteredSessions, selectedIndex: sessionPicker.selectedIndex, filter: sessionPicker.filter })), configPanel.isOpen && (_jsx(ConfigPanel, { activeTab: configPanel.activeTab, status: configPanel.status, settings: configPanel.settings, usage: configPanel.usage, selectedSettingIndex: configPanel.selectedSettingIndex, onClose: configPanel.close, onNextTab: configPanel.nextTab, onPrevTab: configPanel.prevTab, onSetTab: configPanel.setTab, onSelectNextSetting: configPanel.selectNextSetting, onSelectPrevSetting: configPanel.selectPrevSetting, onActivateSetting: configPanel.activateSetting })), mcpPanel.isOpen && (_jsx(McpPanel, { servers: mcpPanel.servers, onClose: mcpPanel.close })), modelSelector.isOpen && (_jsx(ModelSelector, { currentModel: modelSelector.currentModel, onSelect: modelSelector.selectModel, onClose: modelSelector.close })), memoryEditor.isOpen && (_jsx(MemoryEditor, { files: memoryEditor.files, selectedIndex: memoryEditor.selectedIndex, onSelectNext: memoryEditor.selectNext, onSelectPrev: memoryEditor.selectPrev, onEdit: (file) => {
+                        // Open the file in external editor or show content
+                        // For now, just send a message to read/edit the file
+                        memoryEditor.close();
+                        sendMessage(`Please help me edit ${file.path}`);
+                    }, onClose: memoryEditor.close })), helpPanel.isOpen && (_jsx(HelpPanel, { activeTab: helpPanel.activeTab, onClose: helpPanel.close, onNextTab: helpPanel.nextTab, onPrevTab: helpPanel.prevTab })), mode === 'interactive' && !pendingRequest && !panelsOpen && (_jsx(InputPrompt, { onSubmit: sendMessage, disabled: isProcessing, placeholder: "Ask me anything..." })), _jsx(StatusBar, { contextUsage: contextUsage, thinkingState: thinkingState, permissionMode: permissionMode, showThinking: showThinking, isProcessing: isProcessing })] }) }));
 };
 export default App;
 //# sourceMappingURL=App.js.map

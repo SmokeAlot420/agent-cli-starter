@@ -28,4 +28,10 @@ export { ColorizedTextInput } from './ColorizedTextInput.js';
 export { SessionPicker } from './SessionPicker.js';
 // ConfigPanel - Claude Code-style tabbed config panel
 export { ConfigPanel } from './ConfigPanel.js';
+// ModelSelector - Interactive model selection panel
+export { ModelSelector } from './ModelSelector.js';
+// MemoryEditor - Interactive CLAUDE.md file selector
+export { MemoryEditor } from './MemoryEditor.js';
+// HelpPanel - Interactive tabbed help panel
+export { HelpPanel } from './HelpPanel.js';
 //# sourceMappingURL=index.js.map

@@ -87,18 +87,27 @@ export const InputPrompt: React.FC<InputPromptProps> = ({
    * Handle form submission
    */
   const handleSubmit = useCallback((input: string) => {
-    // If autocomplete is open and has selection, insert command instead of submit
+    // If autocomplete is open with selection, select AND submit immediately
     if (autocomplete.isOpen && autocomplete.filteredCommands.length > 0) {
-      insertSelectedCommand();
-      return;
+      const selected = autocomplete.getSelected();
+      if (selected) {
+        const commandStr = `/${selected.name}`;
+        autocomplete.close();
+        setValue('');
+        if (!disabled) {
+          onSubmit(commandStr);
+        }
+        return;
+      }
     }
 
+    // Normal submit
     if (input.trim() && !disabled) {
       onSubmit(input.trim());
       setValue('');
       autocomplete.close();
     }
-  }, [autocomplete, disabled, insertSelectedCommand, onSubmit]);
+  }, [autocomplete, disabled, onSubmit]);
 
   /**
    * Handle keyboard input for autocomplete navigation
@@ -158,6 +167,7 @@ export const InputPrompt: React.FC<InputPromptProps> = ({
         <CommandAutocomplete
           commands={autocomplete.filteredCommands}
           selectedIndex={autocomplete.selectedIndex}
+          scrollOffset={autocomplete.scrollOffset}
           maxVisible={8}
         />
       )}

@@ -12,14 +12,19 @@ export interface ConfigPanelProps {
     mcpServers?: Record<string, {
         connected: boolean;
     }>;
+    /** Currently selected setting index in Config tab */
+    selectedSettingIndex?: number;
     onClose: () => void;
     onNextTab: () => void;
     onPrevTab: () => void;
     onSetTab: (tab: ConfigTab) => void;
+    /** Navigate to next setting in Config tab */
+    onSelectNextSetting?: () => void;
+    /** Navigate to previous setting in Config tab */
+    onSelectPrevSetting?: () => void;
+    /** Activate the selected setting */
+    onActivateSetting?: () => void;
 }
 export declare const ConfigPanel: React.FC<ConfigPanelProps>;
-declare const ConfigTab: React.FC<{
-    settings: ConfigSettings;
-}>;
 export default ConfigPanel;
 //# sourceMappingURL=ConfigPanel.d.ts.map

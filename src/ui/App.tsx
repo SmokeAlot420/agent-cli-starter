@@ -15,6 +15,10 @@ import {
   PermissionPrompt,
   SessionPicker,
   ConfigPanel,
+  McpPanel,
+  ModelSelector,
+  MemoryEditor,
+  HelpPanel,
   type ThinkingState
 } from './components/index.js';
 import {
@@ -23,9 +27,14 @@ import {
   useKeyboard,
   usePermission,
   useSessionPicker,
-  useConfigPanel
+  useConfigPanel,
+  useMcpPanel,
+  useModelSelector,
+  useMemoryEditor,
+  useHelpPanel
 } from './hooks/index.js';
 import type { ConversationalAgentOptions, PermissionMode, ConversationMessage } from '../conversation.js';
+import type { McpServersConfig } from '../features/mcp.js';
 import type { SessionListItem } from '../types/index.js';
 import { BrandingProvider } from './context/BrandingContext.js';
 import type { BrandingConfig } from '../branding.js';
@@ -126,13 +135,22 @@ export const App: React.FC<AppProps> = ({
     onMessage,  // Save messages as they stream
     onLoadMessages,  // Load messages for session picker resume
     // Handle command actions (e.g., showSessionPicker from /resume)
-    onAction: (action: string, _data?: Record<string, unknown>) => {
+    onAction: (action: string, data?: Record<string, unknown>) => {
       if (action === 'showSessionPicker') {
         showSessionPicker();
       } else if (action === 'openConfig') {
         configPanel.open();
+      } else if (action === 'openMcp') {
+        // Open MCP panel with current servers
+        const servers = (data?.servers as McpServersConfig) || {};
+        mcpPanel.open(servers);
+      } else if (action === 'openModelSelector') {
+        modelSelector.open();
+      } else if (action === 'openMemory') {
+        memoryEditor.open();
+      } else if (action === 'openHelp') {
+        helpPanel.open();
       }
-      // Future: handle other actions like 'openMcpPanel', etc.
     }
   });
 
@@ -152,6 +170,13 @@ export const App: React.FC<AppProps> = ({
     }
   });
 
+  // Wrap cyclePermissionMode to update our local state too
+  const cyclePermissionMode = () => {
+    const newMode = agentCyclePermissionMode();
+    setCurrentPermissionMode(newMode);
+    return newMode;
+  };
+
   // Config panel state
   const configPanel = useConfigPanel({
     cwd,
@@ -160,8 +185,34 @@ export const App: React.FC<AppProps> = ({
     thinkingEnabled: showThinking,
     verbose,
     permissionMode: permissionMode,
-    contextPercent: contextUsage
+    contextPercent: contextUsage,
+    // Editable setting callbacks
+    onChangeModel: () => {
+      configPanel.close();
+      modelSelector.open();
+    },
+    onToggleThinking: toggleShowThinking,
+    onCyclePermission: cyclePermissionMode
+    // Note: verbose toggle would need to be added to useAgent if needed
   });
+
+  // MCP panel state
+  const mcpPanel = useMcpPanel();
+
+  // Model selector state
+  const modelSelector = useModelSelector({
+    currentModel: agentOptions?.model || 'opus',
+    onSelect: (model) => {
+      // Send /model command to change the model
+      sendMessage(`/model ${model}`);
+    }
+  });
+
+  // Memory editor state
+  const memoryEditor = useMemoryEditor({ cwd });
+
+  // Help panel state
+  const helpPanel = useHelpPanel();
 
   // Show session picker (Ctrl+R or /resume command action)
   const showSessionPicker = () => {
@@ -169,13 +220,6 @@ export const App: React.FC<AppProps> = ({
       const sessions = onShowSessions();
       sessionPicker.open(sessions);
     }
-  };
-
-  // Wrap cyclePermissionMode to update our local state too
-  const cyclePermissionMode = () => {
-    const newMode = agentCyclePermissionMode();
-    setCurrentPermissionMode(newMode);
-    return newMode;
   };
 
   // Thinking state
@@ -189,7 +233,7 @@ export const App: React.FC<AppProps> = ({
   } = useThinking();
 
   // Keyboard shortcuts (Escape to interrupt only when no panels are open)
-  const panelsOpen = sessionPicker.isOpen || configPanel.isOpen;
+  const panelsOpen = sessionPicker.isOpen || configPanel.isOpen || mcpPanel.isOpen || modelSelector.isOpen || memoryEditor.isOpen || helpPanel.isOpen;
   useKeyboard({
     onClear: clearHistory,
     onInterrupt: interrupt,
@@ -303,15 +347,63 @@ export const App: React.FC<AppProps> = ({
           status={configPanel.status}
           settings={configPanel.settings}
           usage={configPanel.usage}
+          selectedSettingIndex={configPanel.selectedSettingIndex}
           onClose={configPanel.close}
           onNextTab={configPanel.nextTab}
           onPrevTab={configPanel.prevTab}
           onSetTab={configPanel.setTab}
+          onSelectNextSetting={configPanel.selectNextSetting}
+          onSelectPrevSetting={configPanel.selectPrevSetting}
+          onActivateSetting={configPanel.activateSetting}
         />
       )}
 
-      {/* Input prompt (only in interactive mode, hidden during permission/session/config prompts) */}
-      {mode === 'interactive' && !pendingRequest && !sessionPicker.isOpen && !configPanel.isOpen && (
+      {/* MCP panel when open (/mcp) */}
+      {mcpPanel.isOpen && (
+        <McpPanel
+          servers={mcpPanel.servers}
+          onClose={mcpPanel.close}
+        />
+      )}
+
+      {/* Model selector when open (/model) */}
+      {modelSelector.isOpen && (
+        <ModelSelector
+          currentModel={modelSelector.currentModel}
+          onSelect={modelSelector.selectModel}
+          onClose={modelSelector.close}
+        />
+      )}
+
+      {/* Memory editor when open (/memory) */}
+      {memoryEditor.isOpen && (
+        <MemoryEditor
+          files={memoryEditor.files}
+          selectedIndex={memoryEditor.selectedIndex}
+          onSelectNext={memoryEditor.selectNext}
+          onSelectPrev={memoryEditor.selectPrev}
+          onEdit={(file) => {
+            // Open the file in external editor or show content
+            // For now, just send a message to read/edit the file
+            memoryEditor.close();
+            sendMessage(`Please help me edit ${file.path}`);
+          }}
+          onClose={memoryEditor.close}
+        />
+      )}
+
+      {/* Help panel when open (/help) */}
+      {helpPanel.isOpen && (
+        <HelpPanel
+          activeTab={helpPanel.activeTab}
+          onClose={helpPanel.close}
+          onNextTab={helpPanel.nextTab}
+          onPrevTab={helpPanel.prevTab}
+        />
+      )}
+
+      {/* Input prompt (only in interactive mode, hidden during panels) */}
+      {mode === 'interactive' && !pendingRequest && !panelsOpen && (
         <InputPrompt
           onSubmit={sendMessage}
           disabled={isProcessing}

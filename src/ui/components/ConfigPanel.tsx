@@ -13,10 +13,18 @@ export interface ConfigPanelProps {
   settings: ConfigSettings;
   usage: ConfigUsage;
   mcpServers?: Record<string, { connected: boolean }>;
+  /** Currently selected setting index in Config tab */
+  selectedSettingIndex?: number;
   onClose: () => void;
   onNextTab: () => void;
   onPrevTab: () => void;
   onSetTab: (tab: ConfigTab) => void;
+  /** Navigate to next setting in Config tab */
+  onSelectNextSetting?: () => void;
+  /** Navigate to previous setting in Config tab */
+  onSelectPrevSetting?: () => void;
+  /** Activate the selected setting */
+  onActivateSetting?: () => void;
 }
 
 const TAB_LABELS: Record<ConfigTab, string> = {
@@ -33,18 +41,38 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   settings,
   usage,
   mcpServers = {},
+  selectedSettingIndex = 0,
   onClose,
   onNextTab,
-  onPrevTab
+  onPrevTab,
+  onSelectNextSetting,
+  onSelectPrevSetting,
+  onActivateSetting
 }) => {
   // Keyboard handling
   useInput((input, key) => {
     if (key.escape) {
       onClose();
-    } else if (key.rightArrow || (key.tab && !key.shift)) {
-      onNextTab();
-    } else if (key.leftArrow || (key.shift && key.tab)) {
-      onPrevTab();
+    } else if (activeTab === 'config') {
+      // In Config tab: up/down navigate settings, Enter activates
+      if (key.upArrow) {
+        onSelectPrevSetting?.();
+      } else if (key.downArrow) {
+        onSelectNextSetting?.();
+      } else if (key.return) {
+        onActivateSetting?.();
+      } else if (key.rightArrow || (key.tab && !key.shift)) {
+        onNextTab();
+      } else if (key.leftArrow || (key.shift && key.tab)) {
+        onPrevTab();
+      }
+    } else {
+      // Other tabs: left/right navigate tabs
+      if (key.rightArrow || (key.tab && !key.shift)) {
+        onNextTab();
+      } else if (key.leftArrow || (key.shift && key.tab)) {
+        onPrevTab();
+      }
     }
   });
 
@@ -83,7 +111,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           <StatusTab status={status} mcpServers={mcpServers} />
         )}
         {activeTab === 'config' && (
-          <ConfigTab settings={settings} />
+          <EditableConfigTab
+            settings={settings}
+            model={status.model}
+            selectedIndex={selectedSettingIndex}
+          />
         )}
         {activeTab === 'usage' && (
           <UsageTab usage={usage} />
@@ -92,7 +124,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
 
       {/* Help Footer */}
       <Box marginTop={1}>
-        <Text dimColor>escape to close</Text>
+        <Text dimColor>
+          {activeTab === 'config'
+            ? '↑↓ Navigate | Enter: Change | ←→ Tabs | Esc: Close'
+            : '←→ or Tab: Navigate tabs | Esc: Close'}
+        </Text>
       </Box>
     </Box>
   );
@@ -143,26 +179,39 @@ const StatusTab: React.FC<{
   );
 };
 
-// Config Tab Content
-const ConfigTab: React.FC<{ settings: ConfigSettings }> = ({ settings }) => {
+// Editable Config Tab Content
+const EditableConfigTab: React.FC<{
+  settings: ConfigSettings;
+  model: string;
+  selectedIndex: number;
+}> = ({ settings, model, selectedIndex }) => {
+  // Settings in order: model, thinking, permission, verbose
+  const settingRows = [
+    { label: 'Model', value: model, valueColor: 'cyan' },
+    { label: 'Thinking mode', value: settings.thinkingMode ? 'on' : 'off', valueColor: settings.thinkingMode ? 'green' : 'gray' },
+    { label: 'Permission mode', value: settings.permissionMode, valueColor: undefined },
+    { label: 'Verbose output', value: settings.verboseOutput ? 'on' : 'off', valueColor: settings.verboseOutput ? 'green' : 'gray' }
+  ];
+
   return (
     <Box flexDirection="column">
-      <Text dimColor>Configure preferences</Text>
+      <Text dimColor>Configure preferences (Enter to change)</Text>
       <Box height={1} />
-      <ConfigRow
-        label="Thinking mode"
-        value={settings.thinkingMode ? 'true' : 'false'}
-        valueColor={settings.thinkingMode ? 'green' : 'gray'}
-      />
-      <ConfigRow
-        label="Verbose output"
-        value={settings.verboseOutput ? 'true' : 'false'}
-        valueColor={settings.verboseOutput ? 'green' : 'gray'}
-      />
-      <ConfigRow
-        label="Permission mode"
-        value={settings.permissionMode}
-      />
+      {settingRows.map((row, idx) => {
+        const isSelected = idx === selectedIndex;
+        const indicator = isSelected ? '\u25b8 ' : '  ';
+        return (
+          <Box key={row.label}>
+            <Text color={isSelected ? 'cyan' : undefined} bold={isSelected}>
+              {indicator}
+            </Text>
+            <Text color={isSelected ? 'cyan' : 'gray'} bold={isSelected}>
+              {(row.label + ': ').padEnd(18)}
+            </Text>
+            <Text color={row.valueColor} bold={isSelected}>{row.value}</Text>
+          </Box>
+        );
+      })}
     </Box>
   );
 };

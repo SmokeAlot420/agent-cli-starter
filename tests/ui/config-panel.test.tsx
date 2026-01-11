@@ -37,10 +37,14 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -57,16 +61,20 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
     expect(lastFrame()).toContain('Config');
     expect(lastFrame()).toContain('Thinking mode');
-    expect(lastFrame()).toContain('true');
+    expect(lastFrame()).toContain('on');
   });
 
   it('should render usage tab', () => {
@@ -76,10 +84,14 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -94,15 +106,19 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
     expect(lastFrame()).toContain('tab to cycle');
-    expect(lastFrame()).toContain('escape to close');
+    expect(lastFrame()).toContain('Esc: Close');
   });
 
   it('should show MCP servers when provided', () => {
@@ -112,6 +128,7 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         mcpServers={{
           context7: { connected: true },
           archon: { connected: false }
@@ -120,6 +137,9 @@ describe('ConfigPanel Component', () => {
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -135,10 +155,14 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -158,10 +182,14 @@ describe('ConfigPanel Component', () => {
         status={statusWithoutSession}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -175,10 +203,14 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
@@ -186,22 +218,26 @@ describe('ConfigPanel Component', () => {
     expect(lastFrame()).toContain('128,000');
   });
 
-  it('should show verbose output setting as false', () => {
+  it('should show verbose output setting as off', () => {
     const { lastFrame } = render(
       <ConfigPanel
         activeTab="config"
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 
     expect(lastFrame()).toContain('Verbose output');
-    expect(lastFrame()).toContain('false');
+    expect(lastFrame()).toContain('off');
   });
 
   it('should show permission mode', () => {
@@ -211,10 +247,14 @@ describe('ConfigPanel Component', () => {
         status={mockStatus}
         settings={mockSettings}
         usage={mockUsage}
+        selectedSettingIndex={0}
         onClose={() => {}}
         onNextTab={() => {}}
         onPrevTab={() => {}}
         onSetTab={() => {}}
+        onSelectNextSetting={() => {}}
+        onSelectPrevSetting={() => {}}
+        onActivateSetting={() => {}}
       />
     );
 

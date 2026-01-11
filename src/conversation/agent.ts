@@ -436,6 +436,42 @@ export class ConversationalAgent {
               };
               this.isRunning = false;
               return;
+            case 'openMcp':
+              // Action handled by UI layer - emit special message type
+              yield {
+                type: 'text',
+                content: builtinResult.message.content,
+                metadata: { action: 'openMcp' }
+              };
+              this.isRunning = false;
+              return;
+            case 'openModelSelector':
+              // Action handled by UI layer - emit special message type
+              yield {
+                type: 'text',
+                content: builtinResult.message.content,
+                metadata: { action: 'openModelSelector' }
+              };
+              this.isRunning = false;
+              return;
+            case 'openMemory':
+              // Action handled by UI layer - emit special message type
+              yield {
+                type: 'text',
+                content: builtinResult.message.content,
+                metadata: { action: 'openMemory' }
+              };
+              this.isRunning = false;
+              return;
+            case 'openHelp':
+              // Action handled by UI layer - emit special message type
+              yield {
+                type: 'text',
+                content: builtinResult.message.content,
+                metadata: { action: 'openHelp' }
+              };
+              this.isRunning = false;
+              return;
           }
         }
 

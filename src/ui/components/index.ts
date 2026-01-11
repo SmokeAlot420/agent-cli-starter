@@ -54,3 +54,15 @@ export type { SessionPickerProps } from './SessionPicker.js';
 // ConfigPanel - Claude Code-style tabbed config panel
 export { ConfigPanel } from './ConfigPanel.js';
 export type { ConfigPanelProps } from './ConfigPanel.js';
+
+// ModelSelector - Interactive model selection panel
+export { ModelSelector } from './ModelSelector.js';
+export type { ModelSelectorProps } from './ModelSelector.js';
+
+// MemoryEditor - Interactive CLAUDE.md file selector
+export { MemoryEditor } from './MemoryEditor.js';
+export type { MemoryEditorProps } from './MemoryEditor.js';
+
+// HelpPanel - Interactive tabbed help panel
+export { HelpPanel } from './HelpPanel.js';
+export type { HelpPanelProps } from './HelpPanel.js';

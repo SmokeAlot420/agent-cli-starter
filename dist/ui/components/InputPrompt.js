@@ -69,17 +69,26 @@ export const InputPrompt = ({ onSubmit, disabled, placeholder = 'Type your messa
      * Handle form submission
      */
     const handleSubmit = useCallback((input) => {
-        // If autocomplete is open and has selection, insert command instead of submit
+        // If autocomplete is open with selection, select AND submit immediately
         if (autocomplete.isOpen && autocomplete.filteredCommands.length > 0) {
-            insertSelectedCommand();
-            return;
+            const selected = autocomplete.getSelected();
+            if (selected) {
+                const commandStr = `/${selected.name}`;
+                autocomplete.close();
+                setValue('');
+                if (!disabled) {
+                    onSubmit(commandStr);
+                }
+                return;
+            }
         }
+        // Normal submit
         if (input.trim() && !disabled) {
             onSubmit(input.trim());
             setValue('');
             autocomplete.close();
         }
-    }, [autocomplete, disabled, insertSelectedCommand, onSubmit]);
+    }, [autocomplete, disabled, onSubmit]);
     /**
      * Handle keyboard input for autocomplete navigation
      * Note: useInput must be called unconditionally (React hooks rules)
@@ -115,7 +124,7 @@ export const InputPrompt = ({ onSubmit, disabled, placeholder = 'Type your messa
             insertSelectedCommand();
         }
     });
-    return (_jsxs(Box, { flexDirection: "column", children: [_jsxs(Box, { paddingX: 1, marginTop: 1, children: [_jsx(Text, { color: disabled ? 'gray' : 'green', bold: true, children: disabled ? '\u25cb ' : '\u276f ' }), disabled ? (_jsx(Text, { dimColor: true, children: "Processing..." })) : (_jsx(ColorizedTextInput, { value: value, onChange: handleChange, onSubmit: handleSubmit, placeholder: placeholder }))] }), !disabled && autocomplete.isOpen && (_jsx(CommandAutocomplete, { commands: autocomplete.filteredCommands, selectedIndex: autocomplete.selectedIndex, maxVisible: 8 }))] }));
+    return (_jsxs(Box, { flexDirection: "column", children: [_jsxs(Box, { paddingX: 1, marginTop: 1, children: [_jsx(Text, { color: disabled ? 'gray' : 'green', bold: true, children: disabled ? '\u25cb ' : '\u276f ' }), disabled ? (_jsx(Text, { dimColor: true, children: "Processing..." })) : (_jsx(ColorizedTextInput, { value: value, onChange: handleChange, onSubmit: handleSubmit, placeholder: placeholder }))] }), !disabled && autocomplete.isOpen && (_jsx(CommandAutocomplete, { commands: autocomplete.filteredCommands, selectedIndex: autocomplete.selectedIndex, scrollOffset: autocomplete.scrollOffset, maxVisible: 8 }))] }));
 };
 export default InputPrompt;
 //# sourceMappingURL=InputPrompt.js.map

@@ -5,7 +5,7 @@
  * Designed for full Claude Code CLI feature parity.
  */
 import type { ConversationMessage } from './types.js';
-import { type SlashCommand } from '../features/commands.js';
+import type { SlashCommand } from '../features/commands.js';
 import type { McpServersConfig } from '../features/mcp.js';
 import type { ContextManager } from '../features/context.js';
 import type { SessionService } from '../services/sessions.js';
@@ -42,7 +42,13 @@ export type BuiltinCommandAction = {
 } | {
     type: 'openConfig';
 } | {
+    type: 'openMcp';
+} | {
+    type: 'openModelSelector';
+} | {
     type: 'openMemory';
+} | {
+    type: 'openHelp';
 } | {
     type: 'enterPlanMode';
 } | {

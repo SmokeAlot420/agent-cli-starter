@@ -13,8 +13,10 @@ import type { SlashCommand } from '../../features/commands.js';
 export interface CommandAutocompleteProps {
   /** Filtered commands to display */
   commands: SlashCommand[];
-  /** Currently selected index */
+  /** Currently selected index in full list */
   selectedIndex: number;
+  /** Scroll offset (first visible item index) */
+  scrollOffset: number;
   /** Maximum number of commands to show (default: 8) */
   maxVisible?: number;
 }
@@ -52,6 +54,7 @@ function getSourceColor(sourceType: SlashCommand['sourceType']): string {
 export const CommandAutocomplete: React.FC<CommandAutocompleteProps> = ({
   commands,
   selectedIndex,
+  scrollOffset,
   maxVisible = 8
 }) => {
   // Handle empty commands
@@ -71,8 +74,9 @@ export const CommandAutocomplete: React.FC<CommandAutocompleteProps> = ({
 
   // Determine visible range with scrolling
   const totalCommands = commands.length;
-  const visibleCommands = commands.slice(0, maxVisible);
-  const hasMore = totalCommands > maxVisible;
+  const visibleCommands = commands.slice(scrollOffset, scrollOffset + maxVisible);
+  const itemsAbove = scrollOffset;
+  const itemsBelow = Math.max(0, totalCommands - scrollOffset - maxVisible);
 
   return (
     <Box
@@ -82,8 +86,19 @@ export const CommandAutocomplete: React.FC<CommandAutocompleteProps> = ({
       paddingX={1}
       marginLeft={2}
     >
+      {/* Above scroll indicator */}
+      {itemsAbove > 0 && (
+        <Box marginBottom={0}>
+          <Text dimColor italic>
+            {'\u25b2'} {itemsAbove} above...
+          </Text>
+        </Box>
+      )}
+
       {visibleCommands.map((cmd, index) => {
-        const isSelected = index === selectedIndex;
+        // Calculate actual index in full list for selection comparison
+        const actualIndex = scrollOffset + index;
+        const isSelected = actualIndex === selectedIndex;
         const color = getSourceColor(cmd.sourceType);
         const indicator = isSelected ? '\u25b8 ' : '  ';
         const argHint = cmd.metadata.argumentHint
@@ -110,11 +125,11 @@ export const CommandAutocomplete: React.FC<CommandAutocompleteProps> = ({
         );
       })}
 
-      {/* Scroll indicator */}
-      {hasMore && (
+      {/* Below scroll indicator */}
+      {itemsBelow > 0 && (
         <Box marginTop={0}>
           <Text dimColor italic>
-            {'\u25bc'} {totalCommands - maxVisible} more...
+            {'\u25bc'} {itemsBelow} below...
           </Text>
         </Box>
       )}
@@ -122,7 +137,7 @@ export const CommandAutocomplete: React.FC<CommandAutocompleteProps> = ({
       {/* Help text */}
       <Box marginTop={1}>
         <Text dimColor>
-          {'\u2191\u2193'} Navigate | Tab/Enter: Select | Esc: Close
+          {'\u2191\u2193'} Navigate | Enter: Run | Tab: Insert | Esc: Close
         </Text>
       </Box>
     </Box>

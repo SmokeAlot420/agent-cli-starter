@@ -6,8 +6,8 @@
  */
 
 import type { ConversationMessage } from './types.js';
-import { formatCommandList, type SlashCommand } from '../features/commands.js';
-import { formatModelList, resolveModel, getModelDisplayName } from '../features/models.js';
+import type { SlashCommand } from '../features/commands.js';
+import { resolveModel, getModelDisplayName } from '../features/models.js';
 import type { McpServersConfig } from '../features/mcp.js';
 import type { ContextManager } from '../features/context.js';
 import type { SessionService } from '../services/sessions.js';
@@ -39,7 +39,10 @@ export type BuiltinCommandAction =
   | { type: 'renameSession'; name: string }
   | { type: 'exit' }
   | { type: 'openConfig' }
+  | { type: 'openMcp' }
+  | { type: 'openModelSelector' }
   | { type: 'openMemory' }
+  | { type: 'openHelp' }
   | { type: 'enterPlanMode' }
   | { type: 'initProject' }
   | { type: 'addDirectory'; path: string }
@@ -121,11 +124,12 @@ export function handleBuiltinCommand(
         action: { type: 'clearHistory' }
       };
 
-    // /help - Show commands
+    // /help - Open interactive help panel
     case 'help':
     case '?':
       return {
-        message: { type: 'text', content: formatCommandList(context.commands) }
+        message: { type: 'text', content: '' },
+        action: { type: 'openHelp' }
       };
 
     // /sessions - List all sessions
@@ -316,22 +320,12 @@ export function handleBuiltinCommand(
 /**
  * Handle /mcp command
  */
-function handleMcpCommand(args: string, mcpServers: McpServersConfig): BuiltinCommandResult {
+function handleMcpCommand(args: string, _mcpServers: McpServersConfig): BuiltinCommandResult {
   if (args === '' || args === 'status') {
-    const serverList = Object.entries(mcpServers);
-    if (serverList.length === 0) {
-      return {
-        message: { type: 'text', content: 'No MCP servers configured.' }
-      };
-    }
-
-    const lines = ['MCP Servers:', ''];
-    for (const [name, config] of serverList) {
-      const type = config.type || 'stdio';
-      lines.push(`  ${name} (${type})`);
-    }
+    // Open interactive MCP panel
     return {
-      message: { type: 'text', content: lines.join('\n') }
+      message: { type: 'text', content: '' },
+      action: { type: 'openMcp' }
     };
   }
 
@@ -343,7 +337,7 @@ function handleMcpCommand(args: string, mcpServers: McpServersConfig): BuiltinCo
 /**
  * Handle /model command
  */
-function handleModelCommand(args: string, currentModel: string): BuiltinCommandResult {
+function handleModelCommand(args: string, _currentModel: string): BuiltinCommandResult {
   if (args) {
     const newModel = resolveModel(args);
     return {
@@ -355,8 +349,10 @@ function handleModelCommand(args: string, currentModel: string): BuiltinCommandR
     };
   }
 
+  // Open interactive model selector
   return {
-    message: { type: 'text', content: formatModelList(currentModel) }
+    message: { type: 'text', content: '' },
+    action: { type: 'openModelSelector' }
   };
 }
 

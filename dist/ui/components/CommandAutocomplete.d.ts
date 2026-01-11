@@ -10,8 +10,10 @@ import type { SlashCommand } from '../../features/commands.js';
 export interface CommandAutocompleteProps {
     /** Filtered commands to display */
     commands: SlashCommand[];
-    /** Currently selected index */
+    /** Currently selected index in full list */
     selectedIndex: number;
+    /** Scroll offset (first visible item index) */
+    scrollOffset: number;
     /** Maximum number of commands to show (default: 8) */
     maxVisible?: number;
 }

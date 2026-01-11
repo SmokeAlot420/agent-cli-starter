@@ -37,6 +37,14 @@ export interface UseConfigPanelOptions {
   verbose?: boolean;
   permissionMode?: string;
   contextPercent?: number;
+  /** Callback when model setting is activated */
+  onChangeModel?: () => void;
+  /** Callback when thinking mode is toggled */
+  onToggleThinking?: () => void;
+  /** Callback when permission mode is cycled */
+  onCyclePermission?: () => void;
+  /** Callback when verbose is toggled */
+  onToggleVerbose?: () => void;
 }
 
 export interface UseConfigPanelReturn {
@@ -45,14 +53,25 @@ export interface UseConfigPanelReturn {
   status: ConfigStatus;
   settings: ConfigSettings;
   usage: ConfigUsage;
+  /** Currently selected setting index in Config tab */
+  selectedSettingIndex: number;
   open: () => void;
   close: () => void;
   setTab: (tab: ConfigTab) => void;
   nextTab: () => void;
   prevTab: () => void;
+  /** Select next setting in Config tab */
+  selectNextSetting: () => void;
+  /** Select previous setting in Config tab */
+  selectPrevSetting: () => void;
+  /** Activate the currently selected setting */
+  activateSetting: () => void;
 }
 
 const TABS: ConfigTab[] = ['status', 'config', 'usage'];
+
+// Settings in Config tab (for navigation)
+const CONFIG_SETTINGS = ['model', 'thinking', 'permission', 'verbose'] as const;
 
 export function useConfigPanel(
   options: UseConfigPanelOptions = {}
@@ -64,11 +83,16 @@ export function useConfigPanel(
     thinkingEnabled = false,
     verbose = false,
     permissionMode = 'default',
-    contextPercent = 0
+    contextPercent = 0,
+    onChangeModel,
+    onToggleThinking,
+    onCyclePermission,
+    onToggleVerbose
   } = options;
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ConfigTab>('status');
+  const [selectedSettingIndex, setSelectedSettingIndex] = useState(0);
 
   // Get branding from context
   const branding = useBranding();
@@ -123,17 +147,47 @@ export function useConfigPanel(
     });
   }, []);
 
+  const selectNextSetting = useCallback(() => {
+    setSelectedSettingIndex(prev => Math.min(prev + 1, CONFIG_SETTINGS.length - 1));
+  }, []);
+
+  const selectPrevSetting = useCallback(() => {
+    setSelectedSettingIndex(prev => Math.max(prev - 1, 0));
+  }, []);
+
+  const activateSetting = useCallback(() => {
+    const setting = CONFIG_SETTINGS[selectedSettingIndex];
+    switch (setting) {
+      case 'model':
+        onChangeModel?.();
+        break;
+      case 'thinking':
+        onToggleThinking?.();
+        break;
+      case 'permission':
+        onCyclePermission?.();
+        break;
+      case 'verbose':
+        onToggleVerbose?.();
+        break;
+    }
+  }, [selectedSettingIndex, onChangeModel, onToggleThinking, onCyclePermission, onToggleVerbose]);
+
   return {
     isOpen,
     activeTab,
     status,
     settings,
     usage,
+    selectedSettingIndex,
     open,
     close,
     setTab,
     nextTab,
-    prevTab
+    prevTab,
+    selectNextSetting,
+    selectPrevSetting,
+    activateSetting
   };
 }
 

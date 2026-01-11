@@ -11,20 +11,43 @@ const TAB_LABELS = {
     usage: 'Usage'
 };
 const TABS = ['status', 'config', 'usage'];
-export const ConfigPanel = ({ activeTab, status, settings, usage, mcpServers = {}, onClose, onNextTab, onPrevTab }) => {
+export const ConfigPanel = ({ activeTab, status, settings, usage, mcpServers = {}, selectedSettingIndex = 0, onClose, onNextTab, onPrevTab, onSelectNextSetting, onSelectPrevSetting, onActivateSetting }) => {
     // Keyboard handling
     useInput((input, key) => {
         if (key.escape) {
             onClose();
         }
-        else if (key.rightArrow || (key.tab && !key.shift)) {
-            onNextTab();
+        else if (activeTab === 'config') {
+            // In Config tab: up/down navigate settings, Enter activates
+            if (key.upArrow) {
+                onSelectPrevSetting?.();
+            }
+            else if (key.downArrow) {
+                onSelectNextSetting?.();
+            }
+            else if (key.return) {
+                onActivateSetting?.();
+            }
+            else if (key.rightArrow || (key.tab && !key.shift)) {
+                onNextTab();
+            }
+            else if (key.leftArrow || (key.shift && key.tab)) {
+                onPrevTab();
+            }
         }
-        else if (key.leftArrow || (key.shift && key.tab)) {
-            onPrevTab();
+        else {
+            // Other tabs: left/right navigate tabs
+            if (key.rightArrow || (key.tab && !key.shift)) {
+                onNextTab();
+            }
+            else if (key.leftArrow || (key.shift && key.tab)) {
+                onPrevTab();
+            }
         }
     });
-    return (_jsxs(Box, { flexDirection: "column", borderStyle: "round", borderColor: "gray", paddingX: 1, marginTop: 1, children: [_jsxs(Box, { marginBottom: 1, children: [_jsx(Text, { dimColor: true, children: "Settings: " }), TABS.map((tab, idx) => (_jsxs(React.Fragment, { children: [idx > 0 && _jsx(Text, { dimColor: true, children: "  " }), activeTab === tab ? (_jsxs(Text, { bold: true, inverse: true, children: [" ", TAB_LABELS[tab], " "] })) : (_jsx(Text, { dimColor: true, children: TAB_LABELS[tab] }))] }, tab))), _jsx(Text, { dimColor: true, children: "  (\u2190/\u2192 or tab to cycle)" })] }), _jsx(Box, { marginBottom: 1, children: _jsx(Text, { dimColor: true, children: '─'.repeat(60) }) }), _jsxs(Box, { flexDirection: "column", minHeight: 10, children: [activeTab === 'status' && (_jsx(StatusTab, { status: status, mcpServers: mcpServers })), activeTab === 'config' && (_jsx(ConfigTab, { settings: settings })), activeTab === 'usage' && (_jsx(UsageTab, { usage: usage }))] }), _jsx(Box, { marginTop: 1, children: _jsx(Text, { dimColor: true, children: "escape to close" }) })] }));
+    return (_jsxs(Box, { flexDirection: "column", borderStyle: "round", borderColor: "gray", paddingX: 1, marginTop: 1, children: [_jsxs(Box, { marginBottom: 1, children: [_jsx(Text, { dimColor: true, children: "Settings: " }), TABS.map((tab, idx) => (_jsxs(React.Fragment, { children: [idx > 0 && _jsx(Text, { dimColor: true, children: "  " }), activeTab === tab ? (_jsxs(Text, { bold: true, inverse: true, children: [" ", TAB_LABELS[tab], " "] })) : (_jsx(Text, { dimColor: true, children: TAB_LABELS[tab] }))] }, tab))), _jsx(Text, { dimColor: true, children: "  (\u2190/\u2192 or tab to cycle)" })] }), _jsx(Box, { marginBottom: 1, children: _jsx(Text, { dimColor: true, children: '─'.repeat(60) }) }), _jsxs(Box, { flexDirection: "column", minHeight: 10, children: [activeTab === 'status' && (_jsx(StatusTab, { status: status, mcpServers: mcpServers })), activeTab === 'config' && (_jsx(EditableConfigTab, { settings: settings, model: status.model, selectedIndex: selectedSettingIndex })), activeTab === 'usage' && (_jsx(UsageTab, { usage: usage }))] }), _jsx(Box, { marginTop: 1, children: _jsx(Text, { dimColor: true, children: activeTab === 'config'
+                        ? '↑↓ Navigate | Enter: Change | ←→ Tabs | Esc: Close'
+                        : '←→ or Tab: Navigate tabs | Esc: Close' }) })] }));
 };
 // Status Tab Content
 const StatusTab = ({ status, mcpServers }) => {
@@ -36,9 +59,20 @@ const StatusTab = ({ status, mcpServers }) => {
                             return (_jsxs(Text, { children: [idx > 0 && ', ', name, " ", _jsx(Text, { color: color, children: icon })] }, name));
                         }) })] })), _jsx(ConfigRow, { label: "Thinking tokens", value: status.thinkingTokens.toLocaleString() })] }));
 };
-// Config Tab Content
-const ConfigTab = ({ settings }) => {
-    return (_jsxs(Box, { flexDirection: "column", children: [_jsx(Text, { dimColor: true, children: "Configure preferences" }), _jsx(Box, { height: 1 }), _jsx(ConfigRow, { label: "Thinking mode", value: settings.thinkingMode ? 'true' : 'false', valueColor: settings.thinkingMode ? 'green' : 'gray' }), _jsx(ConfigRow, { label: "Verbose output", value: settings.verboseOutput ? 'true' : 'false', valueColor: settings.verboseOutput ? 'green' : 'gray' }), _jsx(ConfigRow, { label: "Permission mode", value: settings.permissionMode })] }));
+// Editable Config Tab Content
+const EditableConfigTab = ({ settings, model, selectedIndex }) => {
+    // Settings in order: model, thinking, permission, verbose
+    const settingRows = [
+        { label: 'Model', value: model, valueColor: 'cyan' },
+        { label: 'Thinking mode', value: settings.thinkingMode ? 'on' : 'off', valueColor: settings.thinkingMode ? 'green' : 'gray' },
+        { label: 'Permission mode', value: settings.permissionMode, valueColor: undefined },
+        { label: 'Verbose output', value: settings.verboseOutput ? 'on' : 'off', valueColor: settings.verboseOutput ? 'green' : 'gray' }
+    ];
+    return (_jsxs(Box, { flexDirection: "column", children: [_jsx(Text, { dimColor: true, children: "Configure preferences (Enter to change)" }), _jsx(Box, { height: 1 }), settingRows.map((row, idx) => {
+                const isSelected = idx === selectedIndex;
+                const indicator = isSelected ? '\u25b8 ' : '  ';
+                return (_jsxs(Box, { children: [_jsx(Text, { color: isSelected ? 'cyan' : undefined, bold: isSelected, children: indicator }), _jsx(Text, { color: isSelected ? 'cyan' : 'gray', bold: isSelected, children: (row.label + ': ').padEnd(18) }), _jsx(Text, { color: row.valueColor, bold: isSelected, children: row.value })] }, row.label));
+            })] }));
 };
 // Usage Tab Content
 const UsageTab = ({ usage }) => {

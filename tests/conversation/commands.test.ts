@@ -169,13 +169,13 @@ describe('handleBuiltinCommand', () => {
   });
 
   describe('model and thinking commands', () => {
-    it('should handle /model command without args (list)', () => {
+    it('should handle /model command without args (opens selector)', () => {
       const context = createMockContext();
       const result = handleBuiltinCommand('model', '', context);
 
       expect(result).not.toBeNull();
-      // Should show model list
-      expect(result?.message.content).toContain('Model');
+      // Should return openModelSelector action to open interactive selector
+      expect(result?.action?.type).toBe('openModelSelector');
     });
 
     it('should handle /model command with model name', () => {

@@ -28,4 +28,10 @@ export { SessionPicker } from './SessionPicker.js';
 export type { SessionPickerProps } from './SessionPicker.js';
 export { ConfigPanel } from './ConfigPanel.js';
 export type { ConfigPanelProps } from './ConfigPanel.js';
+export { ModelSelector } from './ModelSelector.js';
+export type { ModelSelectorProps } from './ModelSelector.js';
+export { MemoryEditor } from './MemoryEditor.js';
+export type { MemoryEditorProps } from './MemoryEditor.js';
+export { HelpPanel } from './HelpPanel.js';
+export type { HelpPanelProps } from './HelpPanel.js';
 //# sourceMappingURL=index.d.ts.map

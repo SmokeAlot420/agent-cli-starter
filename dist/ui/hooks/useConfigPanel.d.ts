@@ -28,6 +28,14 @@ export interface UseConfigPanelOptions {
     verbose?: boolean;
     permissionMode?: string;
     contextPercent?: number;
+    /** Callback when model setting is activated */
+    onChangeModel?: () => void;
+    /** Callback when thinking mode is toggled */
+    onToggleThinking?: () => void;
+    /** Callback when permission mode is cycled */
+    onCyclePermission?: () => void;
+    /** Callback when verbose is toggled */
+    onToggleVerbose?: () => void;
 }
 export interface UseConfigPanelReturn {
     isOpen: boolean;
@@ -35,11 +43,19 @@ export interface UseConfigPanelReturn {
     status: ConfigStatus;
     settings: ConfigSettings;
     usage: ConfigUsage;
+    /** Currently selected setting index in Config tab */
+    selectedSettingIndex: number;
     open: () => void;
     close: () => void;
     setTab: (tab: ConfigTab) => void;
     nextTab: () => void;
     prevTab: () => void;
+    /** Select next setting in Config tab */
+    selectNextSetting: () => void;
+    /** Select previous setting in Config tab */
+    selectPrevSetting: () => void;
+    /** Activate the currently selected setting */
+    activateSetting: () => void;
 }
 export declare function useConfigPanel(options?: UseConfigPanelOptions): UseConfigPanelReturn;
 export default useConfigPanel;
