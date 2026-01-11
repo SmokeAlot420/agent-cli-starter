@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "start": "tsx src/cli.ts",
     "dev": "tsx --watch src/cli.ts",
     "typecheck": "tsc --noEmit",
