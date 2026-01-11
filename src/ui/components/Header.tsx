@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Box, Text } from 'ink';
-import { BRANDING } from '../../branding.js';
+import { useBranding } from '../context/BrandingContext.js';
 
 export interface HeaderProps {
   /** Current working directory */
@@ -22,6 +22,8 @@ export interface HeaderProps {
  * Header component with customizable branding and ASCII art
  */
 export const Header: React.FC<HeaderProps> = ({ cwd, mode: _mode, verbose: _verbose, showLogo = true }) => {
+  const branding = useBranding();
+
   return (
     <Box
       flexDirection="column"
@@ -29,14 +31,14 @@ export const Header: React.FC<HeaderProps> = ({ cwd, mode: _mode, verbose: _verb
     >
       {showLogo && (
         <Box flexDirection="column" marginBottom={0}>
-          <Text color={BRANDING.logoColor}>{BRANDING.logo}</Text>
+          <Text color={branding.logoColor}>{branding.logo}</Text>
         </Box>
       )}
       <Box>
-        <Text bold color={BRANDING.logoColor}>{BRANDING.productName}</Text>
-        <Text dimColor> - {BRANDING.tagline}</Text>
+        <Text bold color={branding.logoColor}>{branding.productName}</Text>
+        <Text dimColor> - {branding.tagline}</Text>
       </Box>
-      <Text dimColor>{BRANDING.subtitle}</Text>
+      <Text dimColor>{branding.subtitle}</Text>
       <Box marginTop={1}>
         <Text color="gray">📁 </Text>
         <Text>{cwd}</Text>

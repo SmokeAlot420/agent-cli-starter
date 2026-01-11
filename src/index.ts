@@ -134,3 +134,11 @@ export type {
 // Session Management
 export { SessionService } from './services/sessions.js';
 export type { SessionInfo, SessionListItem } from './types/sessions.js';
+
+// Branding Context (for downstream customization)
+export {
+  BrandingProvider,
+  useBranding,
+  BrandingContext,
+  type BrandingProviderProps
+} from './ui/context/index.js';

@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { BRANDING } from '../../branding.js';
+import { useBranding } from '../context/BrandingContext.js';
 import { DEFAULT_MODEL, ULTRATHINK_TOKENS } from '../../constants.js';
 
 export type ConfigTab = 'status' | 'config' | 'usage';
@@ -70,10 +70,13 @@ export function useConfigPanel(
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ConfigTab>('status');
 
+  // Get branding from context
+  const branding = useBranding();
+
   // Build status info
   const status: ConfigStatus = {
     version: '1.0.0',
-    productName: BRANDING.productName,
+    productName: branding.productName,
     sessionId,
     cwd,
     model,

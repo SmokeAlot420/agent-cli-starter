@@ -27,12 +27,16 @@ import {
 } from './hooks/index.js';
 import type { ConversationalAgentOptions, PermissionMode, ConversationMessage } from '../conversation.js';
 import type { SessionListItem } from '../types/index.js';
+import { BrandingProvider } from './context/BrandingContext.js';
+import type { BrandingConfig } from '../branding.js';
 
 export interface AppProps {
   /** Working directory for file operations */
   cwd: string;
   /** Operating mode */
   mode: 'interactive' | 'oneshot';
+  /** Custom branding configuration (optional, defaults to template branding) */
+  branding?: BrandingConfig;
   /** Whether to show verbose output */
   verbose: boolean;
   /** Agent options */
@@ -63,6 +67,7 @@ export interface AppProps {
 export const App: React.FC<AppProps> = ({
   cwd,
   mode,
+  branding,
   verbose,
   agentOptions = {},
   initialPrompt,
@@ -253,9 +258,10 @@ export const App: React.FC<AppProps> = ({
     : 'idle';
 
   return (
-    <Box flexDirection="column" minHeight={20}>
-      {/* Header with branding */}
-      <Header cwd={cwd} mode={mode} verbose={verbose} />
+    <BrandingProvider branding={branding}>
+      <Box flexDirection="column" minHeight={20}>
+        {/* Header with branding */}
+        <Header cwd={cwd} mode={mode} verbose={verbose} />
 
       {/* Message stream area */}
       <Box flexDirection="column" flexGrow={1} minHeight={10}>
@@ -321,7 +327,8 @@ export const App: React.FC<AppProps> = ({
         showThinking={showThinking}
         isProcessing={isProcessing}
       />
-    </Box>
+      </Box>
+    </BrandingProvider>
   );
 };
 
