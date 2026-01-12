@@ -1,0 +1,67 @@
+# {{PRODUCT_NAME}}
+
+> {{TAGLINE}}
+
+An AI-powered CLI built with the [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk-typescript).
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Set your API key
+export ANTHROPIC_API_KEY=your-key
+
+# Build
+npm run build
+
+# Link globally
+npm link
+
+# Run!
+{{CLI_COMMAND}} --help
+```
+
+## Customization
+
+Edit `src/branding.ts` to customize:
+- Product name and tagline
+- ASCII logo
+- System prompt (Claude's personality)
+- Default MCP servers
+
+## Development
+
+```bash
+# Development mode (hot reload)
+npm run dev
+
+# Build
+npm run build
+
+# Type check
+npm run typecheck
+```
+
+## Slash Commands
+
+Type `/` to see available commands:
+- `/help` - Show help
+- `/clear` - Clear conversation
+- `/model` - Change model
+- `/think` - Toggle extended thinking
+- And many more...
+
+## Requirements
+
+- Node.js 18+
+- Anthropic API Key
+
+## License
+
+MIT
+
+---
+
+Built with [agent-sdk-cli-template](https://github.com/SmokeAlot420/claude-cli-template)

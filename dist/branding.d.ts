@@ -23,6 +23,8 @@ export interface BrandingConfig {
     logoColor: string;
     /** Prompt prefix (what shows before user input) */
     promptPrefix: string;
+    /** Global CLI command name (e.g., 'fbs', 'mycli') */
+    cliCommand: string;
     /** System prompt appended to Claude's base prompt */
     systemPrompt: string;
     /** Default MCP servers to include */
@@ -34,5 +36,5 @@ export interface BrandingConfig {
  * Default branding - customize this for your agent!
  */
 export declare const BRANDING: BrandingConfig;
-export declare const productName: string, tagline: string, subtitle: string, logo: string, logoColor: string, promptPrefix: string, systemPrompt: string, defaultMcpServers: McpServersConfig, cloudMcpServers: McpServersConfig;
+export declare const productName: string, tagline: string, subtitle: string, logo: string, logoColor: string, promptPrefix: string, cliCommand: string, systemPrompt: string, defaultMcpServers: McpServersConfig, cloudMcpServers: McpServersConfig;
 //# sourceMappingURL=branding.d.ts.map

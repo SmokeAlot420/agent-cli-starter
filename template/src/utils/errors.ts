@@ -1,0 +1,120 @@
+/**
+ * PIV Loop Error Utilities
+ * Centralized error handling and logging
+ *
+ * Uses structured logging internally while maintaining backward-compatible API.
+ */
+
+import { logger } from './logger.js';
+import { PIVErrorCode } from '../types/errors.js';
+
+/**
+ * Structured error for JSON parsing failures
+ * Provides context for debugging malformed responses
+ */
+export interface ParseError {
+  code: PIVErrorCode;
+  message: string;
+  rawContent?: string;
+  parseAttempt?: string;
+}
+
+/**
+ * Create a ParseError for JSON parsing failures
+ */
+export function createParseError(
+  message: string,
+  rawContent?: string,
+  parseAttempt?: string
+): ParseError {
+  return {
+    code: PIVErrorCode.PARSE_JSON_FAILED,
+    message,
+    rawContent: rawContent?.substring(0, 500), // Truncate for logging
+    parseAttempt,
+  };
+}
+
+/**
+ * Create a ParseError for empty responses
+ */
+export function createEmptyResponseError(context: string): ParseError {
+  return {
+    code: PIVErrorCode.PARSE_RESPONSE_EMPTY,
+    message: `Empty response received from ${context}`,
+  };
+}
+
+/**
+ * Custom error class for PIV loop operations
+ */
+export class PIVError extends Error {
+  constructor(
+    message: string,
+    public readonly context: string,
+    public readonly cause?: Error
+  ) {
+    super(`[${context}] ${message}`);
+    this.name = 'PIVError';
+  }
+}
+
+/**
+ * Log an error with context
+ * Uses structured logging internally.
+ *
+ * @param context - The context/module where error occurred (maps to event domain)
+ * @param error - The error or message
+ * @returns The error message string
+ */
+export function logError(context: string, error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const errorType = error instanceof Error ? error.constructor.name : 'Unknown';
+  const stackTrace = error instanceof Error ? error.stack : undefined;
+
+  // Map context to structured event name
+  // e.g., "Orchestrator" -> "orchestrator.error_occurred"
+  const domain = context.toLowerCase().replace(/\s+/g, '_');
+  const event = `${domain}.error_occurred`;
+
+  logger.error(event, {
+    error: message,
+    error_type: errorType,
+    stack_trace: stackTrace,
+  });
+
+  return message;
+}
+
+/**
+ * Log a warning with context
+ * Uses structured logging internally.
+ *
+ * @param context - The context/module where warning occurred (maps to event domain)
+ * @param message - The warning message
+ */
+export function logWarning(context: string, message: string): void {
+  // Map context to structured event name
+  const domain = context.toLowerCase().replace(/\s+/g, '_');
+  const event = `${domain}.warning_occurred`;
+
+  logger.warn(event, {
+    error: message,
+  });
+}
+
+/**
+ * Safely parse JSON with error context
+ *
+ * @param json - The JSON string to parse
+ * @param context - Context for error reporting
+ * @returns Parsed object or null on failure
+ */
+export function safeJsonParse<T>(json: string, context: string): T | null {
+  try {
+    return JSON.parse(json) as T;
+  } catch (error) {
+    logError(context, `Failed to parse JSON: ${error instanceof Error ? error.message : error}`);
+    return null;
+  }
+}

@@ -99,7 +99,7 @@ describe('CLI', () => {
         encoding: 'utf-8'
       });
 
-      expect(output).toContain('claude-cli-template');
+      // Version shows product name from branding
       expect(output).toContain('v1.0.0');
     });
 

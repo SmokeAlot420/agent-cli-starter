@@ -15,6 +15,21 @@ import { discoverAllCommands, formatCommandList } from './features/commands.js';
 import { PluginManager, formatPluginList } from './features/plugins.js';
 import { SessionService } from './services/sessions.js';
 import { BRANDING } from './branding.js';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+// Read version from package.json
+function getVersion() {
+    try {
+        const __dirname = dirname(fileURLToPath(import.meta.url));
+        const pkgPath = join(__dirname, '../package.json');
+        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+        return pkg.version || '0.0.0';
+    }
+    catch {
+        return '0.0.0';
+    }
+}
 /**
  * Show MCP server status
  */
@@ -117,7 +132,7 @@ async function parseArgs() {
             process.exit(0);
         }
         else if (arg === '--version' || arg === '-v') {
-            console.log('claude-cli-template v1.0.0');
+            console.log(`${BRANDING.productName} v${getVersion()}`);
             process.exit(0);
             // Model flags
         }
@@ -233,14 +248,15 @@ async function parseArgs() {
     };
 }
 function printHelp() {
+    const cmd = BRANDING.cliCommand;
     console.log(`
 ${BRANDING.productName} - ${BRANDING.tagline}
 
 USAGE:
-  agent                             Start interactive session
-  agent -i                          Start interactive session
-  agent <request>                   One-shot mode
-  agent "Add user authentication"
+  ${cmd}                             Start interactive session
+  ${cmd} -i                          Start interactive session
+  ${cmd} <request>                   One-shot mode
+  ${cmd} "Add user authentication"
 
 BASIC OPTIONS:
   -i, --interactive       Start interactive session (default if no request)
@@ -289,13 +305,13 @@ ADVANCED OPTIONS:
   --env <key>=<value>       Set environment variable (repeatable)
 
 EXAMPLES:
-  agent                                      # Interactive mode
-  agent "Fix the login bug"                  # One-shot mode
-  agent -i --cwd ./my-project                # Interactive in specific dir
-  agent -V "Build a REST API"                # Verbose - see tool usage
-  agent --model claude-sonnet-4-20250514     # Use Sonnet instead of Opus
-  agent --permission acceptEdits             # Auto-accept file edits
-  agent --sandbox "Run untrusted code"       # Sandboxed execution
+  ${cmd}                                      # Interactive mode
+  ${cmd} "Fix the login bug"                  # One-shot mode
+  ${cmd} -i --cwd ./my-project                # Interactive in specific dir
+  ${cmd} -V "Build a REST API"                # Verbose - see tool usage
+  ${cmd} --model claude-sonnet-4-20250514     # Use Sonnet instead of Opus
+  ${cmd} --permission acceptEdits             # Auto-accept file edits
+  ${cmd} --sandbox "Run untrusted code"       # Sandboxed execution
 
 CAPABILITIES:
   Full Claude Code equivalent:

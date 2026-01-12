@@ -1,13 +1,8 @@
 /**
- * Branding Configuration
+ * 🎨 YOUR BRANDING - Customize this file!
  *
- * Customize your CLI agent here. All branding is centralized in this file.
- *
- * To customize:
- * 1. Change productName to your agent's name
- * 2. Update the ASCII logo
- * 3. Modify the systemPrompt for your agent's personality
- * 4. Configure your default MCP servers
+ * This is the ONLY file you need to edit to brand your CLI.
+ * Change these values to match your product.
  */
 
 import type { McpServersConfig } from './features/mcp.js';
@@ -36,33 +31,33 @@ export interface BrandingConfig {
 }
 
 /**
- * Default branding - customize this for your agent!
+ * 👇 CUSTOMIZE THESE VALUES 👇
  */
 export const BRANDING: BrandingConfig = {
-  productName: 'Fork Brand Ship',
+  productName: '{{PRODUCT_NAME}}',
 
-  tagline: 'Make It Yours',
+  tagline: '{{TAGLINE}}',
 
   subtitle: '',
 
   logo: `
-  ███████╗██████╗ ███████╗
-  ██╔════╝██╔══██╗██╔════╝
-  █████╗  ██████╔╝███████╗
-  ██╔══╝  ██╔══██╗╚════██║
-  ██║     ██████╔╝███████║
-  ╚═╝     ╚═════╝ ╚══════╝`,
+  ╔═══════════════════════════════════╗
+  ║                                   ║
+  ║     {{PRODUCT_NAME_UPPER}}        ║
+  ║     Your AI-Powered CLI           ║
+  ║                                   ║
+  ╚═══════════════════════════════════╝`,
 
   logoColor: 'cyan',
 
-  promptPrefix: 'fbs',
+  promptPrefix: '{{CLI_COMMAND}}',
 
-  cliCommand: 'fbs',
+  cliCommand: '{{CLI_COMMAND}}',
 
   systemPrompt: `
 ## Your Identity
 
-You are a helpful AI assistant powered by Claude.
+You are {{PRODUCT_NAME}}, an AI assistant powered by Claude.
 
 ## Personality
 
@@ -99,10 +94,6 @@ You have full Claude Code capabilities:
 
   cloudMcpServers: {
     // Add cloud-only MCP servers here (no localhost)
-    context7: {
-      type: 'http',
-      url: 'https://mcp.context7.com/mcp'
-    }
   }
 };
 

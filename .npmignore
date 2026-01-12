@@ -1,0 +1,28 @@
+# Development
+.git/
+.github/
+.vscode/
+.idea/
+
+# Source (dist is published)
+src/
+tests/
+*.test.ts
+*.test.tsx
+
+# Config files
+eslint.config.js
+vitest.config.ts
+tsconfig.json
+
+# Build artifacts
+*.tsbuildinfo
+coverage/
+
+# Project specific
+.agents/
+.env*
+*.log
+.claude/settings.local.json
+
+# npm pack will include files from "files" field in package.json

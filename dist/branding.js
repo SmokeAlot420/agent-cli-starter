@@ -24,7 +24,8 @@ export const BRANDING = {
   ██║     ██████╔╝███████║
   ╚═╝     ╚═════╝ ╚══════╝`,
     logoColor: 'cyan',
-    promptPrefix: 'agent',
+    promptPrefix: 'fbs',
+    cliCommand: 'fbs',
     systemPrompt: `
 ## Your Identity
 
@@ -70,5 +71,5 @@ You have full Claude Code capabilities:
     }
 };
 // Export individual values for easy importing
-export const { productName, tagline, subtitle, logo, logoColor, promptPrefix, systemPrompt, defaultMcpServers, cloudMcpServers } = BRANDING;
+export const { productName, tagline, subtitle, logo, logoColor, promptPrefix, cliCommand, systemPrompt, defaultMcpServers, cloudMcpServers } = BRANDING;
 //# sourceMappingURL=branding.js.map

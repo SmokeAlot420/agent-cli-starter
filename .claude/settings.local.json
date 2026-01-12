@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)",
+      "Bash(dir \"C:\\\\Users\\\\Degen\\\\.claude\\\\commands\\\\forge\" /b)",
+      "Bash(npm test:*)",
+      "Bash(dir \"C:\\\\Users\\\\Degen\\\\.claude\\\\commands\" /s /b)",
+      "Bash(findstr:*)",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path ''C:\\\\Users\\\\Degen\\\\.claude\\\\commands'' -Recurse -Filter ''*plan*'' | Select-Object -ExpandProperty FullName\")",
+      "Skill(execute)",
+      "Skill(plan)",
+      "Bash(npm run lint)",
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "Bash(node dist/cli.js:*)",
+      "Bash(npm link)",
+      "Bash(fbs --version:*)",
+      "WebSearch",
+      "mcp__github__search_repositories",
+      "Bash(powershell:*)",
+      "Bash(node bin/create.js:*)",
+      "Bash(node:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm view:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npm install:*)",
+      "Bash(npm unlink:*)",
+      "Bash(agent-sdk-cli-template --version:*)"
+    ]
+  }
+}

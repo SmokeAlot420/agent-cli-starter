@@ -1,7 +1,7 @@
 {
-  "name": "claude-cli-template",
+  "name": "agent-sdk-cli-template",
   "version": "1.0.0",
-  "description": "Fork. Brand. Ship. - Production-ready CLI template for Claude Agent SDK",
+  "description": "Brand your Agent SDK. The white-label CLI template for Claude Agent SDK.",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -20,12 +20,49 @@
     "agent",
     "sdk",
     "cli",
-    "template"
+    "template",
+    "white-label",
+    "terminal",
+    "anthropic",
+    "ai",
+    "chatbot",
+    "assistant"
   ],
-  "author": "",
+  "author": "SmokeAlot420",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SmokeAlot420/claude-cli-template"
+  },
+  "homepage": "https://github.com/SmokeAlot420/claude-cli-template#readme",
+  "bugs": {
+    "url": "https://github.com/SmokeAlot420/claude-cli-template/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "bin": {
+    "agent-sdk-cli-template": "./bin/create.js",
+    "fbs": "./bin/cli.js"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "template/",
+    ".claude/commands/",
+    ".claude/sections/",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./branding": {
+      "types": "./dist/branding.d.ts",
+      "import": "./dist/branding.js"
+    }
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.2",
@@ -43,9 +80,6 @@
     "typescript": "^5.9.3",
     "uuid": "^13.0.0",
     "zod": "^4.3.5"
-  },
-  "bin": {
-    "agent": "./bin/cli.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
