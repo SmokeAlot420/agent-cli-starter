@@ -466,8 +466,7 @@ async function runInteractiveMode(options: CLIOptions): Promise<void> {
     }
 
     // Track current session ID for session service updates
-    // Note: currentSessionId is captured in callbacks for future features (e.g., auto-title on first message)
-    let _currentSessionId: string | undefined = resumeSessionId;
+    let currentSessionId: string | undefined = resumeSessionId;
 
     // Build agent options with resolved session ID
     // CRITICAL: When --continue resolved a session ID, we must set it in agentOptions
@@ -481,9 +480,8 @@ async function runInteractiveMode(options: CLIOptions): Promise<void> {
 
     // Session callbacks for App
     const onSessionCreated = (sessionId: string): void => {
-      _currentSessionId = sessionId;
+      currentSessionId = sessionId;
       // Create session metadata in SQLite (SDK handles history internally)
-      // Note: initialPrompt will be empty initially - updated on first message via onFirstMessage
       sessionService.createWithId(sessionId, '');
     };
 

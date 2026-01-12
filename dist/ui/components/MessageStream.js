@@ -1,47 +1,30 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Box, Text } from 'ink';
 import { UltrathinkText } from './UltrathinkText.js';
+/** Tool display configuration by keyword */
+const TOOL_CONFIG = [
+    { keywords: ['read'], icon: '📖', color: 'blue' },
+    { keywords: ['write'], icon: '📝', color: 'green' },
+    { keywords: ['edit'], icon: '✏️', color: 'green' },
+    { keywords: ['bash'], icon: '💻', color: 'magenta' },
+    { keywords: ['glob'], icon: '📁', color: 'cyan' },
+    { keywords: ['grep'], icon: '🔍', color: 'cyan' },
+    { keywords: ['web', 'fetch'], icon: '🌐', color: 'gray' },
+    { keywords: ['task'], icon: '🤖', color: 'yellow' },
+    { keywords: ['todo'], icon: '📋', color: 'gray' }
+];
+const DEFAULT_TOOL = { icon: '🔧', color: 'gray' };
 /**
- * Get icon for tool type
+ * Get icon and color for tool type
  */
-function getToolIcon(tool) {
+function getToolDisplay(tool) {
     const toolLower = tool.toLowerCase();
-    if (toolLower.includes('read'))
-        return '📖';
-    if (toolLower.includes('write'))
-        return '📝';
-    if (toolLower.includes('edit'))
-        return '✏️';
-    if (toolLower.includes('bash'))
-        return '💻';
-    if (toolLower.includes('glob'))
-        return '📁';
-    if (toolLower.includes('grep'))
-        return '🔍';
-    if (toolLower.includes('web') || toolLower.includes('fetch'))
-        return '🌐';
-    if (toolLower.includes('task'))
-        return '🤖';
-    if (toolLower.includes('todo'))
-        return '📋';
-    return '🔧';
-}
-/**
- * Get color for tool type
- */
-function getToolColor(tool) {
-    const toolLower = tool.toLowerCase();
-    if (toolLower.includes('read'))
-        return 'blue';
-    if (toolLower.includes('write') || toolLower.includes('edit'))
-        return 'green';
-    if (toolLower.includes('bash'))
-        return 'magenta';
-    if (toolLower.includes('glob') || toolLower.includes('grep'))
-        return 'cyan';
-    if (toolLower.includes('task'))
-        return 'yellow';
-    return 'gray';
+    for (const config of TOOL_CONFIG) {
+        if (config.keywords.some(keyword => toolLower.includes(keyword))) {
+            return { icon: config.icon, color: config.color };
+        }
+    }
+    return DEFAULT_TOOL;
 }
 /**
  * Check if content starts with ultrathink prefix (case-insensitive)
@@ -79,8 +62,7 @@ const MessageBlock = ({ message, verbose }) => {
             // Skip progress updates if we already showed the initial tool call
             if (isProgress)
                 return null;
-            const icon = getToolIcon(toolName);
-            const color = getToolColor(toolName);
+            const { icon, color } = getToolDisplay(toolName);
             return (_jsxs(Box, { paddingLeft: 1, children: [_jsxs(Text, { children: [icon, " "] }), _jsx(Text, { color: color, bold: true, children: toolName.padEnd(8) }), _jsxs(Text, { dimColor: true, children: [" ", summary] }), elapsed !== undefined && (_jsxs(Text, { dimColor: true, children: [" (", elapsed.toFixed(1), "s)"] }))] }));
         }
         case 'tool_result':

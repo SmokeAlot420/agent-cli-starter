@@ -3,7 +3,6 @@
  * Handle global keyboard shortcuts
  */
 
-import { useRef, useEffect } from 'react';
 import { useInput, useApp } from 'ink';
 
 export interface UseKeyboardOptions {
@@ -36,17 +35,9 @@ export function useKeyboard(options: UseKeyboardOptions = {}): void {
     onCycleMode,
     onToggleThinking,
     onShowSessions,
-    enabled = true,
-    isProcessing = false
+    enabled = true
   } = options;
   const { exit } = useApp();
-
-  // Use ref to avoid stale closure - isProcessing may change between renders
-  // but the useInput callback captures the initial value in its closure
-  const isProcessingRef = useRef(isProcessing);
-  useEffect(() => {
-    isProcessingRef.current = isProcessing;
-  }, [isProcessing]);
 
   useInput(
     (input, key) => {

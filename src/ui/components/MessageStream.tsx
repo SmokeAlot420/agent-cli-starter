@@ -8,34 +8,32 @@ import { Box, Text } from 'ink';
 import type { ConversationMessage } from '../../conversation.js';
 import { UltrathinkText } from './UltrathinkText.js';
 
-/**
- * Get icon for tool type
- */
-function getToolIcon(tool: string): string {
-  const toolLower = tool.toLowerCase();
-  if (toolLower.includes('read')) return '📖';
-  if (toolLower.includes('write')) return '📝';
-  if (toolLower.includes('edit')) return '✏️';
-  if (toolLower.includes('bash')) return '💻';
-  if (toolLower.includes('glob')) return '📁';
-  if (toolLower.includes('grep')) return '🔍';
-  if (toolLower.includes('web') || toolLower.includes('fetch')) return '🌐';
-  if (toolLower.includes('task')) return '🤖';
-  if (toolLower.includes('todo')) return '📋';
-  return '🔧';
-}
+/** Tool display configuration by keyword */
+const TOOL_CONFIG: Array<{ keywords: string[]; icon: string; color: string }> = [
+  { keywords: ['read'], icon: '📖', color: 'blue' },
+  { keywords: ['write'], icon: '📝', color: 'green' },
+  { keywords: ['edit'], icon: '✏️', color: 'green' },
+  { keywords: ['bash'], icon: '💻', color: 'magenta' },
+  { keywords: ['glob'], icon: '📁', color: 'cyan' },
+  { keywords: ['grep'], icon: '🔍', color: 'cyan' },
+  { keywords: ['web', 'fetch'], icon: '🌐', color: 'gray' },
+  { keywords: ['task'], icon: '🤖', color: 'yellow' },
+  { keywords: ['todo'], icon: '📋', color: 'gray' }
+];
+
+const DEFAULT_TOOL = { icon: '🔧', color: 'gray' };
 
 /**
- * Get color for tool type
+ * Get icon and color for tool type
  */
-function getToolColor(tool: string): string {
+function getToolDisplay(tool: string): { icon: string; color: string } {
   const toolLower = tool.toLowerCase();
-  if (toolLower.includes('read')) return 'blue';
-  if (toolLower.includes('write') || toolLower.includes('edit')) return 'green';
-  if (toolLower.includes('bash')) return 'magenta';
-  if (toolLower.includes('glob') || toolLower.includes('grep')) return 'cyan';
-  if (toolLower.includes('task')) return 'yellow';
-  return 'gray';
+  for (const config of TOOL_CONFIG) {
+    if (config.keywords.some(keyword => toolLower.includes(keyword))) {
+      return { icon: config.icon, color: config.color };
+    }
+  }
+  return DEFAULT_TOOL;
 }
 
 export interface MessageStreamProps {
@@ -102,8 +100,7 @@ const MessageBlock: React.FC<{ message: ConversationMessage; verbose?: boolean }
       // Skip progress updates if we already showed the initial tool call
       if (isProgress) return null;
 
-      const icon = getToolIcon(toolName);
-      const color = getToolColor(toolName);
+      const { icon, color } = getToolDisplay(toolName);
 
       return (
         <Box paddingLeft={1}>

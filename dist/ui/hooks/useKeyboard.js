@@ -2,20 +2,13 @@
  * useKeyboard Hook
  * Handle global keyboard shortcuts
  */
-import { useRef, useEffect } from 'react';
 import { useInput, useApp } from 'ink';
 /**
  * Hook to handle global keyboard shortcuts
  */
 export function useKeyboard(options = {}) {
-    const { onExit, onClear, onInterrupt, onCycleMode, onToggleThinking, onShowSessions, enabled = true, isProcessing = false } = options;
+    const { onExit, onClear, onInterrupt, onCycleMode, onToggleThinking, onShowSessions, enabled = true } = options;
     const { exit } = useApp();
-    // Use ref to avoid stale closure - isProcessing may change between renders
-    // but the useInput callback captures the initial value in its closure
-    const isProcessingRef = useRef(isProcessing);
-    useEffect(() => {
-        isProcessingRef.current = isProcessing;
-    }, [isProcessing]);
     useInput((input, key) => {
         // Ctrl+C - Exit
         if (key.ctrl && input === 'c') {

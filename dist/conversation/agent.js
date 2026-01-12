@@ -117,9 +117,6 @@ export class ConversationalAgent {
      * Discover slash commands from all sources
      */
     discoverCommands() {
-        if (this.options.disableBuiltinCommands) {
-            return discoverAllCommands(this.options.commandSearchPaths || []);
-        }
         return discoverAllCommands(this.options.commandSearchPaths || []);
     }
     /**

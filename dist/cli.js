@@ -398,8 +398,7 @@ async function runInteractiveMode(options) {
             initialMessages = sessionService.getUIMessages(resumeSessionId);
         }
         // Track current session ID for session service updates
-        // Note: currentSessionId is captured in callbacks for future features (e.g., auto-title on first message)
-        let _currentSessionId = resumeSessionId;
+        let currentSessionId = resumeSessionId;
         // Build agent options with resolved session ID
         // CRITICAL: When --continue resolved a session ID, we must set it in agentOptions
         // and clear the continue flag to avoid SDK confusion
@@ -411,9 +410,8 @@ async function runInteractiveMode(options) {
         }
         // Session callbacks for App
         const onSessionCreated = (sessionId) => {
-            _currentSessionId = sessionId;
+            currentSessionId = sessionId;
             // Create session metadata in SQLite (SDK handles history internally)
-            // Note: initialPrompt will be empty initially - updated on first message via onFirstMessage
             sessionService.createWithId(sessionId, '');
         };
         // Called when the first user message is sent - update session with the actual prompt

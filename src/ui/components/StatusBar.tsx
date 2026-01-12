@@ -21,59 +21,45 @@ export interface StatusBarProps {
   isProcessing?: boolean;
 }
 
+/** Mode display configuration */
+const MODE_CONFIG: Record<string, { text: string; color: string }> = {
+  acceptEdits: { text: 'accept edits on', color: 'green' },
+  plan: { text: 'plan mode on', color: 'cyan' },
+  bypassPermissions: { text: 'bypass on', color: 'red' }
+};
+
+const DEFAULT_MODE = { text: 'normal', color: 'gray' };
+
 /**
  * Get mode indicator for display
  */
 function getModeIndicator(mode: string, showThinking: boolean): { text: string; color: string } {
-  let modeText = '';
-  let modeColor = 'gray';
-
-  switch (mode) {
-    case 'acceptEdits':
-      modeText = 'accept edits on';
-      modeColor = 'green';
-      break;
-    case 'plan':
-      modeText = 'plan mode on';
-      modeColor = 'cyan';
-      break;
-    case 'bypassPermissions':
-      modeText = 'bypass on';
-      modeColor = 'red';
-      break;
-    default:
-      modeText = 'normal';
-      modeColor = 'gray';
-  }
-
-  if (showThinking) {
-    modeText += ' | thinking';
-  }
-
-  return { text: modeText, color: modeColor };
+  const config = MODE_CONFIG[mode] || DEFAULT_MODE;
+  const text = showThinking ? `${config.text} | thinking` : config.text;
+  return { text, color: config.color };
 }
 
 /**
  * Get color for context usage based on percentage
  */
 function getContextColor(usage: number): string {
-  if (usage < 50) return 'green';
-  if (usage < 75) return 'yellow';
-  return 'red';
+  if (usage >= 75) return 'red';
+  if (usage >= 50) return 'yellow';
+  return 'green';
 }
+
+/** Thinking state display configuration */
+const STATE_CONFIG: Record<ThinkingState, { text: string; color: string }> = {
+  thinking: { text: 'Thinking...', color: 'magenta' },
+  tool_use: { text: 'Using tools', color: 'yellow' },
+  idle: { text: 'Ready', color: 'green' }
+};
 
 /**
  * Get display text for thinking state
  */
 function getStateDisplay(state: ThinkingState): { text: string; color: string } {
-  switch (state) {
-    case 'thinking':
-      return { text: 'Thinking...', color: 'magenta' };
-    case 'tool_use':
-      return { text: 'Using tools', color: 'yellow' };
-    default:
-      return { text: 'Ready', color: 'green' };
-  }
+  return STATE_CONFIG[state];
 }
 
 /**
