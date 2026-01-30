@@ -2,9 +2,9 @@
 
 # agent-sdk-cli-template
 
-### Brand your Agent SDK.
+### Name your Agent SDK.
 
-The white-label CLI template for Claude Agent SDK.
+Your starter CLI template for Claude Agent SDK.
 
 [![npm version](https://badge.fury.io/js/agent-sdk-cli-template.svg)](https://www.npmjs.com/package/agent-sdk-cli-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -21,7 +21,7 @@ The white-label CLI template for Claude Agent SDK.
 
 `agent-sdk-cli-template` gives you a production-ready CLI template built on the Claude Agent SDK. Full terminal UI, session management, slash commands—all customizable.
 
-**Fork it. Brand it. Ship it.**
+**Fork it. Name it. Ship it.**
 
 ---
 
